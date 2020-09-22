@@ -3,6 +3,8 @@
 package logger
 
 import (
+	"fmt"
+
 	json "github.com/json-iterator/go"
 	"github.com/sirupsen/logrus"
 )
@@ -16,6 +18,9 @@ func WithStruct(i interface{}) *logrus.Entry {
 func getFields(i interface{}) logrus.Fields {
 	b, _ := json.Marshal(i)
 	fields := logrus.Fields{}
-	json.Unmarshal(b, &fields)
+	err := json.Unmarshal(b, &fields)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return fields
 }

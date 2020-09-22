@@ -30,11 +30,10 @@ type formatter struct {
 
 // Init initializes the global logger.
 func Init(config *config.LoggerConfig) {
-	var stdFmt logrus.Formatter
 	// var fileFmt logrus.Formatter
 
 	// Create the formatter for the both outputs.
-	stdFmt = &formatter{true}
+	stdFmt := &formatter{true}
 	// fileFmt = &formatter{false}
 
 	// Std logger.
@@ -147,7 +146,7 @@ func (f *formatter) Format(e *logrus.Entry) ([]byte, error) {
 	}
 
 	body := fmt.Sprintf("%s[%s] (%s:%d) %s ", level, time, filename, line, msg)
-	data := fmt.Sprintf("%s", dataString)
+	data := dataString
 	// Use the color level if it's STDOUT.
 	if f.isStdout {
 		body = fmt.Sprintf("%s[%s] (%s:%d) %s", stdLevel, time, filename, line, msg)
