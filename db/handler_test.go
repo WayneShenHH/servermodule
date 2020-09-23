@@ -46,6 +46,7 @@ func Test_NestedUpdate(t *testing.T) {
 	db.NestedUpdate("info", "1.01", map[string]string{
 		"age":                               "age + 1",
 		"banks[?(@.balance > 200)].balance": "balance * 100",
+		// "banks[?(banks.balance > 200)].balance": "balance * 100",
 		// "banks[*].balance": "balance * 100",
 	})
 }
