@@ -223,6 +223,88 @@ func (hdr *arangoHdr) NestedUpdate(collection, version string, params map[string
 	return 0
 }
 
+// NestedSelectSummary 依照傳入的欄位定義(json path), 查詢特定 collection 的指定欄位的總和，回傳 aql
+func (hdr *arangoHdr) NestedSelectSummary(collection string, params []string) string {
+	bindVars := map[string]interface{}{
+		"@Collection": collection,
+	}
+
+	selectTemplate := `RETURN {
+	<expr>
+}`
+	exprTemplate := `<leaf>: SUM(
+	    FOR <doc> IN @@Collection
+	<merge>
+	)
+	`
+	arrayTemplate := `    FOR <item> IN <parent>.<aname>
+	    <filter>
+	<merge>`
+	leafTemplate := `    RETURN <parent>`
+
+	var expr string
+	for idx := range params {
+		levelofcolumns := getLevels(params[idx])
+		ctrl := &parsectrl{
+			parrent: docItem,
+			alias:   make(map[string]string),
+		}
+		if len(levelofcolumns) == 0 {
+			continue
+		}
+
+		scripts := strings.ReplaceAll(exprTemplate, "<doc>", docItem)
+		for i, level := range levelofcolumns {
+			aname := trimArrayPattern(level)
+			if i == len(levelofcolumns)-1 {
+				if isArray(level) {
+					ctrl.idx++
+					itemName := fmt.Sprint(arrayItemPrefix, ctrl.idx, arrayItemPostfix)
+					script := strings.ReplaceAll(arrayTemplate, "<aname>", aname)
+					filter := arrayFilter(level, ctrl)
+					script = strings.ReplaceAll(script, "<filter>", filter)
+					script = strings.ReplaceAll(script, "<parent>", ctrl.parrent)
+					ctrl.parrent = itemName
+					script = strings.ReplaceAll(script, "<item>", itemName)
+					leafScript := strings.ReplaceAll(leafTemplate, "<parent>", itemName)
+					script = strings.ReplaceAll(script, "<merge>", leafScript)
+					scripts = strings.ReplaceAll(scripts, "<merge>", script)
+					scripts = strings.ReplaceAll(scripts, "<leaf>", aname)
+					continue
+				}
+				ctrl.parrent = fmt.Sprint(ctrl.parrent, string(dot), level)
+				script := strings.ReplaceAll(leafTemplate, "<parent>", ctrl.parrent)
+				scripts = strings.ReplaceAll(scripts, "<merge>", script)
+				scripts = strings.ReplaceAll(scripts, "<leaf>", level)
+				continue
+			}
+
+			if isArray(level) {
+				ctrl.idx++
+				aname := trimArrayPattern(level)
+				itemName := fmt.Sprint(arrayItemPrefix, ctrl.idx, arrayItemPostfix)
+				ctrl.alias[aname] = itemName
+				script := strings.ReplaceAll(arrayTemplate, "<aname>", aname)
+				script = strings.ReplaceAll(script, "<parent>", ctrl.parrent)
+				ctrl.parrent = itemName
+				filter := arrayFilter(level, ctrl)
+				script = strings.ReplaceAll(script, "<filter>", filter)
+				script = strings.ReplaceAll(script, "<item>", itemName)
+				scripts = strings.ReplaceAll(scripts, "<merge>", script)
+			} else {
+				ctrl.parrent = fmt.Sprint(ctrl.parrent, string(dot), level)
+			}
+		}
+		expr += scripts + comma
+	}
+
+	aql := strings.ReplaceAll(selectTemplate, "<expr>", strings.Trim(expr, comma))
+	for k, v := range bindVars {
+		aql = strings.ReplaceAll(aql, "@"+k, v.(string))
+	}
+	return aql
+}
+
 func groupValues(params map[string]string) map[string]map[string]string {
 	res := make(map[string]map[string]string)
 	for key, val := range params {
