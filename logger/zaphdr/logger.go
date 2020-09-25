@@ -9,6 +9,7 @@ import (
 
 var (
 	instance *zap.Logger
+	level    config.Level
 )
 
 // New initializes the global logger.
@@ -19,6 +20,7 @@ func New(cfg *config.LoggerConfig) *Logger {
 	case config.Info:
 		setProd()
 	}
+	level = cfg.StdLevel
 	return &Logger{}
 }
 
@@ -67,7 +69,7 @@ func setDev() {
 			NameKey:        "N",
 			CallerKey:      "C",
 			FunctionKey:    zapcore.OmitKey,
-			MessageKey:     zapcore.OmitKey,
+			MessageKey:     "M",
 			StacktraceKey:  "S",
 			LineEnding:     zapcore.DefaultLineEnding,
 			EncodeLevel:    zapcore.CapitalColorLevelEncoder,
@@ -85,44 +87,40 @@ func setDev() {
 
 // Fatal console log err
 func Fatal(fields ...interface{}) {
-	message := ""
-	fs := processFields(fields)
+	message, fs := processFields(fields)
 	instance.Fatal(message, fs...)
 }
 
 // Error console log err
 func Error(fields ...interface{}) {
-	message := ""
-	fs := processFields(fields)
+	message, fs := processFields(fields)
 	instance.Error(message, fs...)
 }
 
 // Warn console log warn
 func Warn(fields ...interface{}) {
-	message := ""
-	fs := processFields(fields)
+	message, fs := processFields(fields)
 	instance.Warn(message, fs...)
 }
 
 // Info console log info
 func Info(fields ...interface{}) {
-	message := ""
-	fs := processFields(fields)
+	message, fs := processFields(fields)
 	instance.Info(message, fs...)
 }
 
 // Debug console log debug
 func Debug(fields ...interface{}) {
-	message := ""
-	fs := processFields(fields)
+	message, fs := processFields(fields)
 	instance.Debug(message, fs...)
 }
 
-func processFields(fields []interface{}) []zap.Field {
+func processFields(fields []interface{}) (string, []zap.Field) {
 	codekey := "serviceCode"
 	msgKey := "msg"
 	var msg []interface{}
 	var msgField zap.Field
+	var msgstr string
 	res := []zap.Field{}
 	for idx := range fields {
 		switch val := fields[idx].(type) {
@@ -130,6 +128,11 @@ func processFields(fields []interface{}) []zap.Field {
 			res = append(res, zap.Int(codekey, val))
 		case error:
 			msg = append(msg, val.Error())
+		case string:
+			msgstr = val
+			if level != config.Debug {
+				msg = append(msg, val)
+			}
 		default:
 			msg = append(msg, fields[idx])
 		}
@@ -142,5 +145,5 @@ func processFields(fields []interface{}) []zap.Field {
 	if len(msg) > 0 {
 		res = append(res, msgField)
 	}
-	return res
+	return msgstr, res
 }

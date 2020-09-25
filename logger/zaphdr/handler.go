@@ -4,8 +4,8 @@ package zaphdr
 type Logger struct{}
 
 // Debug log Fatal
-func (*Logger) Debug(msg ...interface{}) {
-	Debug(msg)
+func (*Logger) Debug(fields ...interface{}) {
+	Debug(fields...)
 }
 
 // Info console log err

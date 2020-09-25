@@ -11,7 +11,7 @@ import (
 func Test_Info(t *testing.T) {
 	logger.Init(&config.LoggerConfig{
 		StdLevel:   config.Debug,
-		LoggerName: config.Logrus,
+		LoggerName: config.Zap,
 		Formatter:  config.Stackdriver,
 	})
 
@@ -22,8 +22,11 @@ func Test_Info(t *testing.T) {
 	}
 	err := fmt.Errorf("error")
 
-	logger.Debug(msgStr, err, msgStruct, 503)
+	logger.Debug()
+	logger.Debug(msgStr, err, 503)
+	logger.Debug(msgStr)
 	logger.Info(msgStr, err, msgStruct, 503)
+	logger.Info(msgStr, 503)
 	logger.Warn(msgStr, err, msgStruct, 503)
 	logger.Error(msgStr, err, msgStruct, 503)
 	logger.Error(503)
