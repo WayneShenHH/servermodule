@@ -1,6 +1,6 @@
-// Package logger 系統共用 stdout logger
+// Package logrushdr 系統共用 stdout logger
 //nolint:unused // 先保留 logger 介面方法
-package logger
+package logrushdr
 
 import (
 	"fmt"

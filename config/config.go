@@ -2,6 +2,33 @@ package config
 
 import "github.com/spf13/viper"
 
+// Level of logger
+type Level string
+
+// LogFormatter of logger
+type LogFormatter string
+
+// Logger type name list
+const (
+	Zap    = "zap"
+	Logrus = "logrus"
+)
+
+// LogFormatter list
+const (
+	Stackdriver LogFormatter = "stackdriver"
+	File        LogFormatter = "file"
+)
+
+// Level list
+const (
+	Debug   Level = "debug"
+	Info    Level = "info"
+	Warning Level = "warning"
+	Error   Level = "error"
+	Fatal   Level = "fatal"
+)
+
 // Setting 全系統設定吃這個
 var Setting Config
 
@@ -33,9 +60,10 @@ type DatabaseConfig struct {
 
 // LoggerConfig logger setting
 type LoggerConfig struct {
-	StdLevel  string
-	FileLevel string
-	Formatter string
+	StdLevel   Level
+	FileLevel  Level
+	Formatter  LogFormatter
+	LoggerName string
 }
 
 // GRPCConfig config
