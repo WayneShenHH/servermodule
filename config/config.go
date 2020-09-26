@@ -1,6 +1,10 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"time"
+
+	"github.com/spf13/viper"
+)
 
 // Level of logger
 type Level string
@@ -51,11 +55,12 @@ func SetConfig() {
 
 // DatabaseConfig 資料庫連線設定
 type DatabaseConfig struct {
-	Username string
-	Password string
-	Name     string
-	Host     string
-	MaxConns int
+	Username        string
+	Password        string
+	Name            string
+	Host            string
+	MaxConns        int
+	TimeoutDuration time.Duration
 }
 
 // LoggerConfig logger setting

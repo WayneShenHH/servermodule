@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"fmt"
+
 	"github.com/WayneShenHH/servermodule/config"
 	"github.com/WayneShenHH/servermodule/logger/logrushdr"
 	"github.com/WayneShenHH/servermodule/logger/zaphdr"
@@ -52,4 +54,29 @@ func Error(fields ...interface{}) {
 // Fatal log and os.Exit(1)
 func Fatal(fields ...interface{}) {
 	instance.Fatal(fields...)
+}
+
+// Debugf log
+func Debugf(format string, args ...interface{}) {
+	instance.Debug(fmt.Sprintf(format, args...))
+}
+
+// Infof log
+func Infof(format string, args ...interface{}) {
+	instance.Info(fmt.Sprintf(format, args...))
+}
+
+// Warnf log
+func Warnf(format string, args ...interface{}) {
+	instance.Warn(fmt.Sprintf(format, args...))
+}
+
+// Errorf log
+func Errorf(format string, args ...interface{}) {
+	instance.Error(fmt.Sprintf(format, args...))
+}
+
+// Fatalf log and os.Exit(1)
+func Fatalf(format string, args ...interface{}) {
+	instance.Fatal(fmt.Sprintf(format, args...))
 }

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	driver "github.com/arangodb/go-driver"
+	"github.com/arangodb/go-driver/cluster"
 	"github.com/arangodb/go-driver/http"
 
 	"github.com/WayneShenHH/servermodule/config"
@@ -67,6 +68,9 @@ func NewArango(cfg *config.DatabaseConfig) NoSQL {
 	conn, err := http.NewConnection(http.ConnectionConfig{
 		Endpoints: []string{cfg.Host},
 		ConnLimit: cfg.MaxConns,
+		ConnectionConfig: cluster.ConnectionConfig{
+			DefaultTimeout: cfg.TimeoutDuration,
+		},
 	})
 	if err != nil {
 		logger.Fatalf(`connect to arangodb failed, endpoint: %v`, cfg.Host)
