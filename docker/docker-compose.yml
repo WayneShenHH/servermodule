@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  # arangodb:
+  #   image: arangodb:3.6
+  #   container_name: project_name_arangodb
+  #   environment:
+  #     ARANGO_NO_AUTH: "1"
+  #   ports:
+  #     - "8529:8529"
+  #   network_mode: "host"
+
+  project_name:
+    container_name: project_name_postfix
+    image: images.wayne.shen.io/project_name:latest
+    command: servicebin config
+    # environment:
+    #   GML_DATABASE_HOST: http://10.200.6.31:8529
+    #   GML_DATABASE_NAME: Database
+    # 啟動時傳入環境參數
+    env_file:
+      - ./compose.env
+    ports:
+      - "8443:8443"
+    network_mode: "host"
