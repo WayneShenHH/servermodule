@@ -24,9 +24,9 @@ func (*Logger) Warn(fields ...interface{}) {
 	Warn(fields...)
 }
 
-// Warn console log err
+// WarnStack console log err
 func (*Logger) WarnStack(fields ...interface{}) {
-	fields = append(fields, zap.String("stacktrace", stack.TakeStacktrace(callerSkipOffset-1)))
+	fields = append(fields, zap.String(stackstraceKey, stack.TakeStacktrace(callerSkipOffset-1)))
 	Warn(fields...)
 }
 

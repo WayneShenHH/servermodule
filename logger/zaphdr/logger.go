@@ -9,6 +9,7 @@ import (
 
 const (
 	callerSkipOffset = 3 // zaphdr.Fatal & zaphdr.Logger.Fatal & logger.Fatal
+	stackstraceKey   = "stacktrace"
 )
 
 var (
@@ -48,7 +49,7 @@ func setProd() {
 			CallerKey:      zapcore.OmitKey,
 			FunctionKey:    zapcore.OmitKey,
 			MessageKey:     zapcore.OmitKey,
-			StacktraceKey:  "stacktrace",
+			StacktraceKey:  stackstraceKey,
 			LineEnding:     zapcore.DefaultLineEnding,
 			EncodeLevel:    zapcore.LowercaseLevelEncoder,
 			EncodeTime:     zapcore.EpochMillisTimeEncoder,
@@ -74,7 +75,7 @@ func setDev() {
 			CallerKey:      "C",
 			FunctionKey:    zapcore.OmitKey,
 			MessageKey:     "M",
-			StacktraceKey:  "S",
+			StacktraceKey:  stackstraceKey,
 			LineEnding:     zapcore.DefaultLineEnding,
 			EncodeLevel:    zapcore.CapitalColorLevelEncoder,
 			EncodeTime:     zapcore.RFC3339TimeEncoder,
