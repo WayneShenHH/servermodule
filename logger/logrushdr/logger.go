@@ -13,7 +13,7 @@ import (
 
 	"github.com/WayneShenHH/servermodule/config"
 	"github.com/WayneShenHH/servermodule/logger/logrushdr/stackdriver"
-	"github.com/WayneShenHH/servermodule/util"
+	"github.com/WayneShenHH/servermodule/util/color"
 	"github.com/WayneShenHH/servermodule/versions"
 )
 
@@ -138,15 +138,15 @@ func (f *formatter) Format(e *logrus.Entry) ([]byte, error) {
 	stdLevel := ""
 	switch level {
 	case "DEBU":
-		stdLevel = util.ColorString(util.DebugColor, level) //fmt.Sprintf(printColor, debugColor, level)
+		stdLevel = color.Blue.Add(level)
 	case "INFO":
-		stdLevel = util.ColorString(util.InfoColor, level) //fmt.Sprintf(printColor, infoColor, level)
+		stdLevel = color.Cyan.Add(level)
 	case "WARN":
-		stdLevel = util.ColorString(util.WarningColor, level) //fmt.Sprintf(printColor, warningColor, level)
+		stdLevel = color.Yellow.Add(level)
 	case "ERRO":
-		stdLevel = util.ColorString(util.ErrorColor, level) //fmt.Sprintf(printColor, errorColor, level)
+		stdLevel = color.Red.Add(level)
 	case "FATA":
-		stdLevel = util.ColorString(util.FatalColor, level) //fmt.Sprintf(printColor, fatalColor, level)
+		stdLevel = color.Magenta.Add(level)
 	}
 
 	body := fmt.Sprintf("%s[%s] (%s:%d) %s", level, time, filename, line, msg)

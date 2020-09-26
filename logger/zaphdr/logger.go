@@ -7,6 +7,10 @@ import (
 	"github.com/WayneShenHH/servermodule/config"
 )
 
+const (
+	callerSkipOffset = 3 // zaphdr.Fatal & zaphdr.Logger.Fatal & logger.Fatal
+)
+
 var (
 	instance *zap.Logger
 	level    config.Level
@@ -54,7 +58,7 @@ func setProd() {
 		OutputPaths:      []string{"stderr"},
 		ErrorOutputPaths: []string{"stderr"},
 	}
-	instance, _ = cfg.Build()
+	instance, _ = cfg.Build(zap.AddCallerSkip(callerSkipOffset))
 }
 
 func setDev() {
@@ -81,7 +85,7 @@ func setDev() {
 		ErrorOutputPaths: []string{"stderr"},
 	}
 
-	dev, _ := cfg.Build()
+	dev, _ := cfg.Build(zap.AddCallerSkip(callerSkipOffset))
 	instance = dev
 }
 
@@ -133,6 +137,8 @@ func processFields(fields []interface{}) (string, []zap.Field) {
 			if level != config.Debug {
 				msg = append(msg, val)
 			}
+		case zap.Field:
+			res = append(res, val)
 		default:
 			msg = append(msg, fields[idx])
 		}

@@ -1,5 +1,11 @@
 package zaphdr
 
+import (
+	"go.uber.org/zap"
+
+	"github.com/WayneShenHH/servermodule/util/stack"
+)
+
 // Logger implemeent
 type Logger struct{}
 
@@ -15,6 +21,12 @@ func (*Logger) Info(fields ...interface{}) {
 
 // Warn console log err
 func (*Logger) Warn(fields ...interface{}) {
+	Warn(fields...)
+}
+
+// Warn console log err
+func (*Logger) WarnStack(fields ...interface{}) {
+	fields = append(fields, zap.String("stacktrace", stack.TakeStacktrace(callerSkipOffset-1)))
 	Warn(fields...)
 }
 
