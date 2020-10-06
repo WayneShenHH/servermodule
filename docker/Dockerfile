@@ -5,6 +5,9 @@ RUN apt-get update && apt-get install -y git
 # env for go workdir and mod vendor
 ENV GO_WORKDIR /workdir
 ENV GOFLAGS=-mod=vendor
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV CGO_ENABLED=0
 
 # claim workdir and move to workdir loc
 WORKDIR $GO_WORKDIR
@@ -16,11 +19,11 @@ ADD . $GO_WORKDIR
 # 使用 -X main.gitcommitnum 動態將 `git_commit_num` 帶入二進制參數
 RUN go build -ldflags "-X main.version=`git rev-parse --short=6 HEAD`" -o servicebin
 
-FROM centos:7
+FROM plugins/base:multiarch
 ENV GO_WORKDIR /workdir
 
 # 將 /app 加入 container 的環境路徑，啟動後可以傳入指令
-ENV PATH /app
+# ENV PATH /app
 WORKDIR /app
 
 # copy binary into container (從 builder 的目錄下將執行檔複製到 centos 內)
@@ -29,4 +32,5 @@ COPY --from=builder $GO_WORKDIR/servicebin servicebin
 # COPY ./conf.d ./conf.d
 # COPY env.yaml .
 
+ENTRYPOINT [ "./servicebin" ]
 # CMD ["./servicebin","--config","./env.yaml"]
