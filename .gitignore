@@ -1,2 +1,3 @@
 vendor
 *.html
+cmd/wayneutil/wayneutil

@@ -82,12 +82,18 @@ func init() {
 		viper.SetDefault("grpc.addr", ":8443")
 	}
 
+	// http
+	{
+		viper.SetDefault("http.addr", ":18086")
+		viper.SetDefault("http.pingurl", "/health")
+	}
+
 	// logger
 	{
 		viper.SetDefault("logger.stdlevel", "debug")
 		viper.SetDefault("logger.filelevel", "debug")
 		viper.SetDefault("logger.formatter", "")
-		viper.SetDefault("logger.loggername", "zap")//LoggerName
+		viper.SetDefault("logger.loggername", "zap") //LoggerName
 	}
 }
 
