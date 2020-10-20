@@ -210,7 +210,11 @@ function bentest(){
 }
 
 function unitest(){
-  go test -cover $(go list ./... | grep -E -v "vendor|integration|wayne")
+  go test -v -cover $(go list ./... | grep -E -v "vendor|integration|wayne")
+}
+
+function lstest(){
+  go test -v -cover $(go list ./$1/... | grep -E -v "vendor|integration|wayne")
 }
 
 function setps(){
