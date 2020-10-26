@@ -120,6 +120,85 @@ alias nsqui="cd ~/nsqlog && nsqadmin --lookupd-http-address=127.0.0.1:4161"
 
 alias lintfix="golangci-lint run --fix"
 
+function gvi() {
+  ver="${1:0:8}"
+  godir="/usr/local/go"
+  verdir="/usr/local/gvm/$ver"
+  if [ -d $godir ]; then
+      sudo rm -rf $godir
+      echo "uninstall previous version"
+  fi
+
+  if [ -d $verdir ]; then
+    sudo rm -rf $verdir
+    echo "remove old $verdir"
+  fi
+  sudo mkdir -p $verdir
+  if [ $? != 0 ];then
+    echo "fail to install $ver..."
+    return
+  fi
+
+  sudo tar -C $verdir -xzf $1
+  if [ $? != 0 ];then
+    echo "fail to install $ver..."
+    return
+  fi
+  echo "unpackage to $verdir success"
+  
+  sudo cp -r $verdir/go /usr/local/go
+  if [ $? != 0 ];then
+    echo "fail to install $ver..."
+    return
+  fi
+
+  echo "install $ver success"
+  go version
+}
+
+function gvm() {
+  if [ -z "$1" ];then
+    echo "usage: gvm (ls | lastest | go-version)"
+    return
+  fi
+
+  if [ $1 = 'ls' ];then
+    ls /usr/local/gvm | awk '{print $1 "\t"}'
+    return
+  fi
+  
+  if [ $1 = 'lastest' ];then
+    max="go1.1.1"
+    all=$(ls /usr/local/gvm)
+    array=($(echo $all | tr ' ' "\n"))
+    for ver in "${array[@]}"
+    do
+      if [[ "$max" < "$ver" ]];then
+        max=$ver        
+      fi
+    done
+    echo "using $max as lastest"
+    gvm $max
+    return
+  fi
+
+  godir="/usr/local/go"
+  verdir="/usr/local/gvm/$1"
+  if [ -d $verdir ]; then
+      if [ -d $godir ]; then
+        sudo rm -rf $godir
+        echo "delete $godir"
+      fi
+      sudo cp -r $verdir/go $godir
+    else
+      echo "$1 not exist..."
+      return
+  fi
+
+  echo "switch to $1 success"
+  go version
+}
+
 function gcpredis(){
   kubectl -n=$KUBE_NAME_SPACE port-forward pod/$1 6386:6379
 }
