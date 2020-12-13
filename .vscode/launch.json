@@ -39,6 +39,24 @@
                 "/Users/wayne/projects/toolsgo/config/setting.stbk.loc.yml"
             ],
             "showLog": false
+        },
+        {
+            "name": "UNIT",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "remotePath": "",
+            "port": 8888,
+            "host": "127.0.0.1",
+            "program": "${workspaceFolder}/logger",
+            "env": {
+                "MTS_DATABASE_LOGMODE": true
+            },
+            "args": [
+                "run",
+                "Test_Info",
+            ],
+            "showLog": false
         }
     ]
 }
