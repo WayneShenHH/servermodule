@@ -107,8 +107,23 @@ alias notes="cd ~/projects/paradise/notes"
 alias c:notes="code ~/projects/paradise/notes"
 alias wayne="cd ~/projects/servermodule"
 alias c:wayne="code ~/projects/servermodule"
-alias c:service="code ~/projects/paradise/service-template"
+alias c:service="code ~/projects/paradise/fortest/service-template"
 alias s:docker="sudo systemctl start docker"
+# main project
+alias pgc="cd ~/projects/paradise/gamecontroller"
+alias c:pgc="code ~/projects/paradise/gamecontroller"
+alias pgm="cd ~/projects/paradise/gamemaster"
+alias c:pgm="code ~/projects/paradise/gamemaster"
+alias prs="cd ~/projects/paradise/roomservice"
+alias c:prs="code ~/projects/paradise/roomservice"
+alias pbe="cd ~/projects/paradise/backendmodules"
+alias c:pbe="code ~/projects/paradise/backendmodules"
+alias pgs="cd ~/projects/paradise/gameservice"
+alias c:pgs="code ~/projects/paradise/gameservice"
+alias pgl="cd ~/projects/paradise/gologger"
+alias c:pgl="code ~/projects/paradise/gologger"
+alias psm="cd ~/projects/paradise/fortest/gamesimulation"
+alias c:psm="code ~/projects/paradise/fortest/gamesimulation"
 
 alias gcpredis="gcloud compute ssh fsbs-forwarder --zone asia-east1-b -- -N -L 6386:10.0.0.3:6379"
 alias gcpredisl1="kubectl -n=lab1 port-forward service/redis 6386:6379"
@@ -117,8 +132,32 @@ alias gcplog="kubectl port-forward svc/kibana 5601:443 -n=logging"
 alias nsqlook="cd ~/nsqlog && nsqlookupd"
 alias nsq="cd ~/nsqlog && nsqd --lookupd-tcp-address=127.0.0.1:4160 -broadcast-address=127.0.0.1"
 alias nsqui="cd ~/nsqlog && nsqadmin --lookupd-http-address=127.0.0.1:4161"
-
 alias lintfix="golangci-lint run --fix"
+alias c:zsh="code ~/.zshrc"
+alias c:host="sudo code /etc/hosts --user-data-dir"
+
+function mgd(){
+  # https://mega.nz/file/TZ8nFKzL#NfwZWTabsBUG3GyKbZStV_yslg73ENQ3OEQhd-KPGDc
+  # https://mega.co.nz/#!TZ8nFKzL!NfwZWTabsBUG3GyKbZStV_yslg73ENQ3OEQhd-KPGDc
+  echo $1
+  url=${1//'#'/'!'} # replace sharp to exclamation mark
+  ori="mega.nz/file/"
+  rep="mega.co.nz/#!"
+  link=${url//$ori/$rep}
+  echo $link
+  megadl $link --path=./mega
+}
+
+function gbuild() {
+  cd ~/projects/paradise/roomservice/games/game$1/algorithm-test
+  CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ~/projects/paradise/fortest/gamesimulation/game$1_simulation/simulation.exe
+  go build -o ~/projects/paradise/fortest/gamesimulation/game$1_simulation/simulation
+  prs
+}
+
+function sucode(){
+  sudo code $1 --user-data-dir
+}
 
 function gvi() {
   ver="${1:0:8}"
@@ -270,6 +309,10 @@ do
 done
 }
 
+function bddtest(){
+  go clean -testcache && go test -v -timeout 50s ./$1 -tags integration -run $2
+}
+
 function shtest(){
   if git branch --merged master | grep -v '^[ *]*master$';then
     echo "ok" + $(git branch --merged master)
@@ -319,40 +362,61 @@ function s:rediscmd(){
   rediscommander/redis-commander:latest
 }
 
+function s:all(){
+  s:arango
+  s:redis
+  s:nats
+}
+
+function d:all(){
+  d:arango
+  d:nats
+  d:redis
+}
+
 function s:redis(){
-  sudo docker-compose -f $HOME/projects/paradise/service-template/local/redis/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/redis/docker-compose.yml up -d
+  # config cluster
+  REDIS_CLUSTER_IP=$(hostname -I | awk '{ print $1}')
+  redis-cli -c -p 7001 --cluster create $REDIS_CLUSTER_IP:7001 $REDIS_CLUSTER_IP:7002 $REDIS_CLUSTER_IP:7003 $REDIS_CLUSTER_IP:7004 $REDIS_CLUSTER_IP:7005 $REDIS_CLUSTER_IP:7006 --cluster-replicas 1
 }
 
 function s:nats(){
-  sudo docker-compose -f $HOME/projects/paradise/service-template/local/nats/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/nats/docker-compose.yml up -d
 }
 
 function s:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/service-template/local/arangodb/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/arangodb/docker-compose.yml up -d
 }
 
 function s:server(){
-  sudo docker-compose -f $HOME/projects/paradise/service-template/local/service/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/service/docker-compose.yml up -d
 }
 
 function d:redis(){
-  sudo docker-compose -f $HOME/projects/paradise/service-template/local/redis/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/redis/docker-compose.yml down -v
 }
 
 function d:nats(){
-  sudo docker-compose -f $HOME/projects/paradise/service-template/local/nats/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/nats/docker-compose.yml down -v
 }
 
 function d:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/service-template/local/arangodb/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/arangodb/docker-compose.yml down -v
 }
 
 function d:server(){
-  sudo docker-compose -f $HOME/projects/paradise/service-template/local/service/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/service/docker-compose.yml down -v
 }
 
 function commit(){
   git commit -m "feat($1): $2"
+  git push
+}
+
+function gpa(){
+  git add .
+  git commit -m "$1"
   git push
 }
 
