@@ -1,82 +1,129 @@
 package logger
 
 import (
-	"fmt"
-
 	"github.com/WayneShenHH/servermodule/config"
-	"github.com/WayneShenHH/servermodule/logger/logrushdr"
+	"github.com/WayneShenHH/servermodule/constant"
 	"github.com/WayneShenHH/servermodule/logger/zaphdr"
+)
+
+// logger mode list
+const (
+	ProdutionLevel   constant.Level = "info"
+	DevelopmentLevel constant.Level = "debug"
+	ErrorLevel       constant.Level = "error"
+
+	JsonFormatter constant.LogFormatter = "json"
+	StdFormatter  constant.LogFormatter = "std"
 )
 
 // Logger interface
 type Logger interface {
-	Debug(fields ...interface{})
-	Info(fields ...interface{})
-	Warn(fields ...interface{})
-	Error(fields ...interface{})
-	Fatal(fields ...interface{})
+	Fatal(args ...interface{})
+	Error(args ...interface{})
+	WarnCallStack(args ...interface{})
+	Warn(args ...interface{})
+	InfoCallStack(msg ...interface{})
+	Info(msg ...interface{})
+	Debug(msg ...interface{})
+	DebugCallStack(msg ...interface{})
+	Fatalf(format string, args ...interface{})
+	Errorf(format string, args ...interface{})
+	Warnf(format string, args ...interface{})
+	Infof(format string, args ...interface{})
+	Debugf(format string, args ...interface{})
+	OpenFile(fileName string)
+
+	SetFatalCallback(fn func(msg string))
+	SetServiceCode(code constant.ServiceCode)
 }
 
 var instance Logger
 
-// Init logger by name
+// Init logger by level
 func Init(cfg *config.LoggerConfig) {
-	switch cfg.LoggerName {
-	case config.Zap:
-		instance = zaphdr.New(cfg)
-	case config.Logrus:
-		instance = logrushdr.New(cfg)
-	default:
-		instance = logrushdr.New(cfg)
-	}
+	instance = zaphdr.New(cfg)
 }
 
-// Debug log
-func Debug(fields ...interface{}) {
-	instance.Debug(fields...)
+// OpenFile output to file
+func OpenFile(fileName string) {
+	instance.OpenFile(fileName)
 }
 
-// Info log
-func Info(fields ...interface{}) {
-	instance.Info(fields...)
+func init() {
+	Init(config.Setting.Logger) // default mode
 }
 
-// Warn log
-func Warn(fields ...interface{}) {
-	instance.Warn(fields...)
+// SetServiceCode constant code
+func SetServiceCode(code constant.ServiceCode) {
+	instance.SetServiceCode(code)
 }
 
-// Error log
-func Error(fields ...interface{}) {
-	instance.Error(fields...)
+// SetFatalCallback constant callback task, which run before fatal.panic
+func SetFatalCallback(fn func(msg string)) {
+	instance.SetFatalCallback(fn)
 }
 
-// Fatal log and os.Exit(1)
-func Fatal(fields ...interface{}) {
-	instance.Fatal(fields...)
+// FatalOnFail console & panic when not success, auto filled service-code field when arg was constant.ServiceCode type
+func Fatal(args ...interface{}) {
+	instance.Fatal(args...)
 }
 
-// Debugf log
-func Debugf(format string, args ...interface{}) {
-	instance.Debug(fmt.Sprintf(format, args...))
+// Error console when err isn't null, auto filled service-code field when arg was constant.ServiceCode type
+func Error(args ...interface{}) {
+	instance.Error(args...)
 }
 
-// Infof log
-func Infof(format string, args ...interface{}) {
-	instance.Info(fmt.Sprintf(format, args...))
+// WarnCallStack console warning & stack-trace, auto filled service-code field when arg was constant.ServiceCode type
+func WarnCallStack(args ...interface{}) {
+	instance.WarnCallStack(args...)
 }
 
-// Warnf log
-func Warnf(format string, args ...interface{}) {
-	instance.Warn(fmt.Sprintf(format, args...))
+// Warn console warning, auto filled service-code field when arg was constant.ServiceCode type
+func Warn(args ...interface{}) {
+	instance.Warn(args...)
 }
 
-// Errorf log
-func Errorf(format string, args ...interface{}) {
-	instance.Error(fmt.Sprintf(format, args...))
+// InfoCallStack console info & stack-trace, auto filled service-code field when arg was constant.ServiceCode type
+func InfoCallStack(args ...interface{}) {
+	instance.InfoCallStack(args...)
 }
 
-// Fatalf log and os.Exit(1)
+// Info console info, auto filled service-code field when arg was constant.ServiceCode type
+func Info(args ...interface{}) {
+	instance.Info(args...)
+}
+
+// Debug console debug log, auto filled service-code field when arg was constant.ServiceCode type
+func Debug(args ...interface{}) {
+	instance.Debug(args...)
+}
+
+// DebugCallStack console debug log & stack-trace, auto filled service-code field when arg was constant.ServiceCode type
+func DebugCallStack(args ...interface{}) {
+	instance.DebugCallStack(args...)
+}
+
+// Fatalf equal to fmt.Printf but auto given log struct
 func Fatalf(format string, args ...interface{}) {
-	instance.Fatal(fmt.Sprintf(format, args...))
+	instance.Fatalf(format, args...)
+}
+
+// Errorf equal to fmt.Printf but auto given log struct
+func Errorf(format string, args ...interface{}) {
+	instance.Errorf(format, args...)
+}
+
+// Warnf equal to fmt.Printf but auto given log struct
+func Warnf(format string, args ...interface{}) {
+	instance.Warnf(format, args...)
+}
+
+// Infof equal to fmt.Printf but auto given log struct
+func Infof(format string, args ...interface{}) {
+	instance.Infof(format, args...)
+}
+
+// Debugf equal to fmt.Printf but auto given log struct
+func Debugf(format string, args ...interface{}) {
+	instance.Debugf(format, args...)
 }

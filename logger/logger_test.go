@@ -5,33 +5,69 @@ import (
 	"testing"
 
 	"github.com/WayneShenHH/servermodule/config"
+	"github.com/WayneShenHH/servermodule/constant"
 	"github.com/WayneShenHH/servermodule/logger"
 )
 
-func Test_Info(t *testing.T) {
-	logger.Init(&config.LoggerConfig{
-		StdLevel:   config.Debug,
-		LoggerName: config.Logrus,
-		Formatter:  config.Stackdriver,
-	})
+type MsgStruct struct{}
 
-	msgStr := "testing string"
-	msgStruct := map[string]interface{}{
+var (
+	msgStr    = "log-message-string"
+	tagStr    = "a-tag"
+	msgStruct = map[string]interface{}{
 		"int": 1,
 		"str": "string",
 	}
-	err := fmt.Errorf("error content")
+	msgSlice                               = []string{"item1", "item2"}
+	err                                    = fmt.Errorf("error-message-string")
+	serviceCode       constant.ServiceCode = 500
+	emptyMsgStructPtr *MsgStruct
+	cfg               *config.LoggerConfig = &config.LoggerConfig{
+		StdLevel:    constant.Debug,
+		Formatter:   constant.JsonFormatter,
+		ServiceCode: serviceCode,
+	}
+)
 
-	logger.Debug()
-	logger.Debug(msgStr, err, 503)
-	logger.Debug(msgStr)
-	logger.Debugf("some where got an error: %v", err)
-	logger.Info(msgStr, err, msgStruct, 503)
-	logger.Info(msgStr, 503)
-	logger.Warn(msgStr, err, msgStruct, 503)
-	logger.Error(msgStr, err, msgStruct, 503)
-	logger.Error(503)
-	logger.Error(msgStr)
-	logger.Error(err)
-	logger.Error(msgStruct, 503)
+func init() {
+	logger.Init(cfg)
+}
+
+func Test_Debug(t *testing.T) {
+	logger.Debug(msgStr, msgStruct, msgSlice, err, emptyMsgStructPtr)
+	logger.Debug(msgStr, msgStruct, msgSlice, err, emptyMsgStructPtr)
+	logger.Debugf("%v", msgStr)
+	logger.DebugCallStack(msgStr, msgStruct)
+}
+
+func Test_Info(t *testing.T) {
+	logger.Info(tagStr, msgStr, err, msgStruct)
+	logger.Infof("[%v] %v %v %v", tagStr, msgStr, err, msgStruct)
+	logger.InfoCallStack(tagStr, msgStr)
+}
+
+func Test_Warn(t *testing.T) {
+	logger.Warn(msgStr, msgStruct)
+	logger.Warnf("%v, %v", msgStr, msgStruct)
+	logger.WarnCallStack(msgStr, msgStruct)
+}
+
+func Test_Error(t *testing.T) {
+	logger.Error(msgStr, msgStruct)
+}
+func Test_FormatError(t *testing.T) {
+	logger.Errorf("error: %v", err)
+	logger.Errorf("data: %v, %v", msgSlice, msgStruct)
+	logger.Errorf("nil: %v", nil)
+	logger.Errorf("emptyMsgStructPtr: %v", emptyMsgStructPtr)
+}
+
+func Test_Fatal(t *testing.T) {
+	logger.Fatal(err, msgStr, msgStruct) // exit here
+}
+
+func Test_OpenFile(t *testing.T) {
+	logger.OpenFile("tmp.log")
+	logger.Infof("Test_OpenFile Infof")
+	logger.Errorf("Test_OpenFile Errorf")
 }

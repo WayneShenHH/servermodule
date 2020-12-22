@@ -1,156 +1,246 @@
 package zaphdr
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"encoding/json"
+	"fmt"
+	"os"
+	"strings"
+	"time"
 
 	"github.com/WayneShenHH/servermodule/config"
+	"github.com/WayneShenHH/servermodule/constant"
+	"github.com/WayneShenHH/servermodule/logger/zaphdr/stack"
+	"github.com/WayneShenHH/servermodule/slackAlert"
+	"github.com/WayneShenHH/servermodule/util/color"
 )
 
 const (
-	callerSkipOffset = 3 // zaphdr.Fatal & zaphdr.Logger.Fatal & logger.Fatal
-	stackstraceKey   = "stacktrace"
+	callerSkipOffset = 3 // zaphdr.fatal & zaphdr.FatalOnError & logger.FatalOnError
 )
+
+// key list
+const (
+	timeKey        = "time"
+	stackstraceKey = "stacktrace"
+	codekey        = "serviceCode"
+	msgKey         = "msg"
+	levelKey       = "level"
+)
+
+// level list
+const (
+	debugLevel = 0
+	infoLevel  = 1
+	warnLevel  = 2
+	errorLevel = 3
+	fatalLevel = 4
+)
+
+// formatter list
+const (
+	jsonFormatter = 1
+	stdFormatter  = 2
+)
+
+var levelNameMap = map[constant.Level]int{
+	constant.Debug: debugLevel,
+	constant.Info:  infoLevel,
+	constant.Warn:  warnLevel,
+	constant.Error: errorLevel,
+	constant.Fatal: fatalLevel,
+}
+
+var levelIDMap = map[int]constant.Level{
+	debugLevel: constant.Debug,
+	infoLevel:  constant.Info,
+	warnLevel:  constant.Warn,
+	errorLevel: constant.Error,
+	fatalLevel: constant.Fatal,
+}
+
+var levelColorMap = map[int]string{
+	debugLevel: color.Blue.Add("DEBUG"),
+	infoLevel:  color.Cyan.Add("INFO"),
+	warnLevel:  color.Yellow.Add("WARN"),
+	errorLevel: color.Red.Add("ERROR"),
+	fatalLevel: color.Magenta.Add("FATAL"),
+}
+
+var formatterNameMap = map[constant.LogFormatter]int{
+	constant.JsonFormatter: jsonFormatter,
+	constant.StdFormatter:  stdFormatter,
+}
 
 var (
-	instance *zap.Logger
-	level    config.Level
+	workingDir string
 )
 
-// New initializes the global logger.
-func New(cfg *config.LoggerConfig) *Logger {
-	switch cfg.StdLevel {
-	case config.Debug:
-		setDev()
-	case config.Info:
-		setProd()
-	}
-	level = cfg.StdLevel
-	return &Logger{}
+// Logger of zap implement
+type Logger struct {
+	level         int
+	serviceCode   constant.ServiceCode
+	fatalCallback func(msg string)
+	outputFile    *os.File
+	formatter     func(level int, addStack bool, fields []interface{}) string
 }
 
 func init() {
-	setProd() //default prod mode
+	if dir, err := os.Getwd(); err == nil {
+		workingDir = dir
+	}
 }
 
-func setProd() {
-	cfg := zap.Config{
-		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
-		Development: false,
-		Sampling: &zap.SamplingConfig{
-			Initial:    100,
-			Thereafter: 100,
-		},
-		Encoding: "json",
-		EncoderConfig: zapcore.EncoderConfig{
-			TimeKey:        "time",
-			LevelKey:       "level",
-			NameKey:        "logger",
-			CallerKey:      zapcore.OmitKey,
-			FunctionKey:    zapcore.OmitKey,
-			MessageKey:     zapcore.OmitKey,
-			StacktraceKey:  stackstraceKey,
-			LineEnding:     zapcore.DefaultLineEnding,
-			EncodeLevel:    zapcore.LowercaseLevelEncoder,
-			EncodeTime:     zapcore.EpochMillisTimeEncoder,
-			EncodeDuration: zapcore.SecondsDurationEncoder,
-			EncodeCaller:   zapcore.ShortCallerEncoder,
-		},
-		OutputPaths:      []string{"stderr"},
-		ErrorOutputPaths: []string{"stderr"},
-	}
-	instance, _ = cfg.Build(zap.AddCallerSkip(callerSkipOffset))
-}
-
-func setDev() {
-	cfg := zap.Config{
-		Level:       zap.NewAtomicLevelAt(zap.DebugLevel),
-		Development: true,
-		Encoding:    "console",
-		EncoderConfig: zapcore.EncoderConfig{
-			// Keys can be anything except the empty string.
-			TimeKey:        "T",
-			LevelKey:       "L",
-			NameKey:        "N",
-			CallerKey:      "C",
-			FunctionKey:    zapcore.OmitKey,
-			MessageKey:     "M",
-			StacktraceKey:  stackstraceKey,
-			LineEnding:     zapcore.DefaultLineEnding,
-			EncodeLevel:    zapcore.CapitalColorLevelEncoder,
-			EncodeTime:     zapcore.RFC3339TimeEncoder,
-			EncodeDuration: zapcore.StringDurationEncoder,
-			EncodeCaller:   zapcore.ShortCallerEncoder,
-		},
-		OutputPaths:      []string{"stderr"},
-		ErrorOutputPaths: []string{"stderr"},
+// New init logger
+func New(cfg *config.LoggerConfig) *Logger {
+	if cfg == nil {
+		cfg = &config.LoggerConfig{
+			StdLevel: "debug",
+		}
 	}
 
-	dev, _ := cfg.Build(zap.AddCallerSkip(callerSkipOffset))
-	instance = dev
+	lv, exist := levelNameMap[cfg.StdLevel]
+	if !exist {
+		lv = debugLevel
+	}
+
+	l := &Logger{
+		level:       lv,
+		serviceCode: cfg.ServiceCode,
+	}
+
+	switch formatterNameMap[cfg.Formatter] {
+	case jsonFormatter:
+		l.formatter = l.jsonOutput
+	case stdFormatter:
+		l.formatter = l.stdOutput
+	default:
+		l.formatter = l.stdOutput
+	}
+
+	return l
 }
 
 // Fatal console log err
-func Fatal(fields ...interface{}) {
-	message, fs := processFields(fields)
-	instance.Fatal(message, fs...)
+func (l *Logger) fatal(fields ...interface{}) {
+	output := l.formatter(fatalLevel, true, fields)
+	if l.fatalCallback != nil {
+		l.fatalCallback(output)
+	}
+	if slackAlert.IsSlackEnable() {
+		slackAlert.SendError(output)
+	}
+
+	os.Exit(1)
 }
 
 // Error console log err
-func Error(fields ...interface{}) {
-	message, fs := processFields(fields)
-	instance.Error(message, fs...)
+func (l *Logger) error(fields ...interface{}) string {
+	e := l.formatter(errorLevel, true, fields)
+	if slackAlert.IsSlackEnable() {
+		slackAlert.SendWarns(e)
+	}
+	return e
 }
 
 // Warn console log warn
-func Warn(fields ...interface{}) {
-	message, fs := processFields(fields)
-	instance.Warn(message, fs...)
+func (l *Logger) warn(addStack bool, fields ...interface{}) {
+	e := l.formatter(warnLevel, addStack, fields)
+	if slackAlert.IsSlackEnable() {
+		slackAlert.SendWarns(e)
+	}
 }
 
 // Info console log info
-func Info(fields ...interface{}) {
-	message, fs := processFields(fields)
-	instance.Info(message, fs...)
+func (l *Logger) info(addStack bool, fields ...interface{}) {
+	l.formatter(infoLevel, addStack, fields)
 }
 
 // Debug console log debug
-func Debug(fields ...interface{}) {
-	message, fs := processFields(fields)
-	instance.Debug(message, fs...)
+func (l *Logger) debug(addStack bool, fields ...interface{}) {
+	l.formatter(debugLevel, addStack, fields)
 }
 
-func processFields(fields []interface{}) (string, []zap.Field) {
-	codekey := "serviceCode"
-	msgKey := "msg"
-	var msg []interface{}
-	var msgField zap.Field
-	var msgstr string
-	res := []zap.Field{}
+func now() string {
+	return time.Now().UTC().Format(time.RFC3339)
+}
+
+func stdnow() string {
+	return color.Green.Add(time.Now().UTC().Format(time.RFC3339))
+}
+
+func fieldsToString(fields []interface{}) string {
+	fs, split := "", " "
 	for idx := range fields {
 		switch val := fields[idx].(type) {
-		case int:
-			res = append(res, zap.Int(codekey, val))
 		case error:
-			msg = append(msg, val.Error())
+			fs += fmt.Sprint(val.Error(), split)
 		case string:
-			msgstr = val
-			if level != config.Debug {
-				msg = append(msg, val)
-			}
-		case zap.Field:
-			res = append(res, val)
+			fs += fmt.Sprint(val, split)
 		default:
-			msg = append(msg, fields[idx])
+			js, _ := json.Marshal(val)
+			fs += fmt.Sprint(string(js), split)
 		}
 	}
-	if len(msg) == 1 {
-		msgField = zap.Any(msgKey, msg[0])
-	} else {
-		msgField = zap.Any(msgKey, msg)
-	}
-	if len(msg) > 0 {
-		res = append(res, msgField)
-	}
-	return msgstr, res
+
+	return strings.Trim(fs, split)
 }
+
+func (l *Logger) jsonOutput(level int, addStack bool, fields []interface{}) string {
+	if l.level > level {
+		return ""
+	}
+
+	msg := fieldsToString(fields)
+	outmap := map[string]interface{}{
+		levelKey: levelIDMap[level],
+		timeKey:  now(),
+		msgKey:   msg,
+	}
+
+	if addStack {
+		outmap[stackstraceKey] = stack.TakeStacktrace(callerSkipOffset + 1)
+	}
+	if l.serviceCode > 0 {
+		outmap[codekey] = l.serviceCode
+	}
+
+	js, _ := json.Marshal(outmap)
+	output := string(js)
+	fmt.Println(output)
+	if l.outputFile != nil {
+		line := output + "\n"
+		if _, err := l.outputFile.WriteString(line); err != nil {
+			panic(err)
+		}
+	}
+	return output
+}
+
+func (l *Logger) stdOutput(level int, addStack bool, fields []interface{}) string {
+	if l.level > level {
+		return ""
+	}
+
+	msg := fieldsToString(fields)
+
+	var stackstr string
+	if addStack {
+		stackstr = "\n" + stack.TakeStacktrace(callerSkipOffset) + "\n"
+	}
+
+	var codeStr string
+	if l.serviceCode > 0 {
+		codeStr = fmt.Sprintf(" service-code: %v", l.serviceCode)
+	}
+
+	output := fmt.Sprintf("%v [%v]%v %v%v", stdnow(), levelColorMap[level], codeStr, msg, stackstr)
+	fmt.Println(output)
+
+	return output
+}
+
+// func getStacktrace() string {
+// 	funcptr, file, line, _ := runtime.Caller(callerSkipOffset)
+// 	file = "." + strings.TrimPrefix(file, workingDir)
+// 	return fmt.Sprintf("%v:%d func:%v", file, line, runtime.FuncForPC(funcptr).Name())
+// }
