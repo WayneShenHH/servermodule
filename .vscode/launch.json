@@ -19,6 +19,7 @@
             "args": [
                 "--godog.tags=tag"
             ],
+            "buildFlags": "-tags=integration",
             "showLog": false
         },
         {
