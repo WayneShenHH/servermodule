@@ -20,6 +20,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -93,7 +94,14 @@ func init() {
 		viper.SetDefault("logger.stdlevel", "debug")
 		viper.SetDefault("logger.filelevel", "debug")
 		viper.SetDefault("logger.formatter", "")
-		viper.SetDefault("logger.loggername", "zap") //LoggerName
+		viper.SetDefault("logger.serviceCode", 0) //LoggerName
+	}
+
+	// websocket
+	{
+		viper.SetDefault("websocket.addr", ":18088")
+		viper.SetDefault("websocket.readTimeout", time.Second*10)
+		viper.SetDefault("websocket.writeTimeout", time.Second*10)
 	}
 }
 

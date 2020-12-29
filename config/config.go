@@ -51,7 +51,6 @@ type LoggerConfig struct {
 	StdLevel    constant.Level
 	FileLevel   constant.Level
 	Formatter   constant.LogFormatter
-	LoggerName  string
 	ServiceCode constant.ServiceCode
 }
 
@@ -117,9 +116,11 @@ type GRPCConfig struct {
 
 // WebsocketConfig ws 設定
 type WebsocketConfig struct {
-	Addr      string
-	PingDelay int
-	PingURL   string
+	Addr         string
+	PingDelay    int
+	PingURL      string
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
 }
 
 // HTTPConfig 的設定檔結構

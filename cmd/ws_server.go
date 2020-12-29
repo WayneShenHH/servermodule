@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"context"
+	"encoding/json"
+
 	"github.com/spf13/cobra"
 
 	"github.com/WayneShenHH/servermodule/config"
@@ -15,17 +18,21 @@ var serverWSCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		logger.Debug(cmd.Short)
-
-		started := make(chan bool)
-		tested := make(chan bool)
-		go websocket.Start(config.Setting)
-
-		go func() {
-			<-started
-			logger.Debug("deploy success")
-			// tested <- true
-		}()
-		<-tested
+		handlers := map[websocket.Action]websocket.ActionHandler{
+			"act1": func(request websocket.Payload) []byte {
+				resp := websocket.Payload{
+					Action: "act1-res",
+					Data:   "ok",
+				}
+				bytes, err := json.Marshal(resp)
+				if err != nil {
+					logger.Error("act1 error:", err)
+				}
+				return bytes
+			},
+		}
+		server := websocket.NewServer(context.TODO(), config.Setting.Websocket, handlers)
+		logger.Fatal(server.Start())
 	},
 }
 

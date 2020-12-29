@@ -2,7 +2,6 @@ package websocket
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -17,32 +16,22 @@ import (
 	"github.com/WayneShenHH/servermodule/logger"
 )
 
-type Action string
-
-type Payload struct {
-	Action Action
-	Data   interface{}
-}
-
-type Server struct {
+type MockServer struct {
 	ctx             context.Context
 	config          *config.WebsocketConfig
-	routeHandlerMap map[Action]ActionHandler
+	mockResponseMap map[string][]byte
 }
 
-// ActionHandler define logic of each route
-type ActionHandler func(request Payload) []byte
-
-func NewServer(ctx context.Context, cfg *config.WebsocketConfig, routeHandlerMap map[Action]ActionHandler) *Server {
-	return &Server{
+func NewMock(ctx context.Context, cfg *config.WebsocketConfig, mockResponseMap map[string][]byte) *MockServer {
+	return &MockServer{
 		ctx:             ctx,
 		config:          cfg,
-		routeHandlerMap: routeHandlerMap,
+		mockResponseMap: mockResponseMap,
 	}
 }
 
 // Start server
-func (hdr *Server) Start() error {
+func (hdr *MockServer) Start() error {
 	l, err := net.Listen("tcp", hdr.config.Addr)
 	if err != nil {
 		return err
@@ -50,11 +39,12 @@ func (hdr *Server) Start() error {
 	logger.Infof("listening on %v", hdr.config.Addr)
 
 	s := &http.Server{
-		Handler:      websocketServer{},
-		ReadTimeout:  hdr.config.ReadTimeout,
-		WriteTimeout: hdr.config.WriteTimeout,
+		Handler: echoServer{
+			mockResponseMap: hdr.mockResponseMap,
+		},
+		ReadTimeout:  time.Second * 10,
+		WriteTimeout: time.Second * 10,
 	}
-
 	errc := make(chan error, 1)
 	go func() {
 		errc <- s.Serve(l)
@@ -74,11 +64,14 @@ func (hdr *Server) Start() error {
 	return s.Shutdown(ctx)
 }
 
-type websocketServer struct {
-	routeHandlerMap map[Action]ActionHandler
+// echoServer is the WebSocket echo server implementation.
+// It ensures the client speaks the echo subprotocol and
+// only allows one message every 100ms with a 10 message burst.
+type echoServer struct {
+	mockResponseMap map[string][]byte
 }
 
-func (s websocketServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s echoServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c, err := websocket.Accept(w, r, nil)
 	if err != nil {
 		logger.Errorf("%v", err)
@@ -102,7 +95,7 @@ func (s websocketServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // echo reads from the WebSocket connection and then writes
 // the received message back to it.
 // The entire function has 10s to complete.
-func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn, l *rate.Limiter) error {
+func (s echoServer) handleMessage(ctx context.Context, c *websocket.Conn, l *rate.Limiter) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
 	defer cancel()
 
@@ -116,19 +109,15 @@ func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn, l
 		return err
 	}
 
-	// process input here
-	payload := Payload{}
-	err = json.Unmarshal(req, &payload)
-	if err != nil {
-		return err
-	}
+	//  default echo this request
+	resp := req
 
-	hdr, exist := s.routeHandlerMap[payload.Action]
-	if !exist {
-		return fmt.Errorf("Action: %v undefined", payload.Action)
+	if s.mockResponseMap != nil {
+		val, exist := s.mockResponseMap[string(req)]
+		if exist {
+			resp = val
+		}
 	}
-
-	resp := hdr(payload)
 
 	err = c.Write(ctx, mt, resp)
 	if err != nil {
