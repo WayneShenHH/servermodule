@@ -126,3 +126,44 @@ func (s echoServer) handleMessage(ctx context.Context, c *websocket.Conn, l *rat
 
 	return nil
 }
+
+func ServeMock(addr string, responseMap map[string][]byte) error {
+	// This handler accepts a WebSocket connection, reads a single JSON
+	// message from the client and then closes the connection.
+
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		c, err := websocket.Accept(w, r, nil)
+		if err != nil {
+			return
+		}
+		// defer c.Close(websocket.StatusInternalError, "the sky is falling")
+
+		ctx, cancel := context.WithTimeout(r.Context(), time.Second*10)
+		defer cancel()
+
+		mt, req, err := c.Read(context.TODO())
+		if err != nil {
+			return
+		}
+
+		// logger.Debugf("websocket/mockServer got message, size: %v bytes", len(req))
+		//  default echo this request
+		resp := req
+
+		if responseMap != nil {
+			val, exist := responseMap[string(req)]
+			if exist {
+				resp = val
+			}
+		}
+
+		err = c.Write(ctx, mt, resp)
+		if err != nil {
+			return
+		}
+
+		// c.Close(websocket.StatusNormalClosure, "")
+	})
+
+	return http.ListenAndServe(addr, nil)
+}
