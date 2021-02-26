@@ -99,16 +99,19 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias prime-run="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only"
 alias zsh="source ~/.zshrc"
-alias toolsgo="cd ~/projects/toolsgo"
 alias pid="ps aux | awk '{print \$2 \"\\t\" \$11}' | grep  $1"
+alias s:docker="sudo systemctl start docker"
+
+alias toolsgo="cd ~/projects/toolsgo"
+alias wayne="cd ~/projects/servermodule"
+alias c:wayne="code ~/projects/servermodule"
+
 alias paradise="cd ~/projects/paradise"
 alias notes="cd ~/projects/paradise/notes"
 alias c:notes="code ~/projects/paradise/notes"
-alias wayne="cd ~/projects/servermodule"
-alias c:wayne="code ~/projects/servermodule"
 alias c:service="code ~/projects/paradise/fortest/service-template"
-alias s:docker="sudo systemctl start docker"
 # main project
 alias pgc="cd ~/projects/paradise/gamecontroller"
 alias c:pgc="code ~/projects/paradise/gamecontroller"
@@ -118,10 +121,24 @@ alias prs="cd ~/projects/paradise/roomservice"
 alias c:prs="code ~/projects/paradise/roomservice"
 alias pbe="cd ~/projects/paradise/backendmodules"
 alias c:pbe="code ~/projects/paradise/backendmodules"
+function u:pbe(){
+  go get gitlab.geax.io/demeter/backendmodules@$1
+  go mod vendor
+}
 alias pgs="cd ~/projects/paradise/gameservice"
 alias c:pgs="code ~/projects/paradise/gameservice"
 alias pgl="cd ~/projects/paradise/gologger"
 alias c:pgl="code ~/projects/paradise/gologger"
+function u:pgl(){
+  go get gitlab.geax.io/demeter/gologger@$1
+  go mod vendor
+}
+alias pgo="cd ~/projects/paradise/gamecore"
+alias c:pgo="code ~/projects/paradise/gamecore"
+function u:pgo(){
+  go get gitlab.geax.io/demeter/gamecore@$1
+  go mod vendor
+}
 alias psm="cd ~/projects/paradise/fortest/gamesimulation"
 alias c:psm="code ~/projects/paradise/fortest/gamesimulation"
 
@@ -300,6 +317,22 @@ function gitcls(){
   git fetch --prune
 }
 
+function gpm(){
+  if [ -z "$1" ];then
+    echo "need input a branch to merge"
+    return
+  fi
+  cur=$(git branch --show-current)
+  echo "current:" $cur
+  echo "update:" $1 "\n"
+  gco $1
+  gup
+  gco $cur
+  echo "\n"
+  echo $cur "merge from:" $1
+  gm $1
+}
+
 function doloop(){
   for i in {1..$1};
 do
@@ -324,7 +357,7 @@ function shtest(){
 function svctest(){
   # go clean -testcache && go test -v -timeout 5s ./module/mq/mockqueue/mockqueue_test.go
   # go clean -testcache && go test -v -timeout 5s ./handlers -run Test_Name
-  go clean -testcache && go test -v -timeout 50s $1 -run $2
+  TRACE_LEVEL=debug go clean -testcache && go test -v -timeout 50s ./$1 -run $2
 }
 
 function bentest(){
@@ -357,21 +390,28 @@ function docker-stop-all(){
 }
 
 function s:rediscmd(){
-  sudo docker run --rm --name redis-commander -d \
-  -p 18081:8081 \
-  rediscommander/redis-commander:latest
+  # sudo docker run --rm --name redis-commander -d \
+  # -p 18081:8081 \
+  # rediscommander/redis-commander:latest
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/rediscommander/docker-compose.yml up -d
+}
+
+function d:rediscmd(){
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/rediscommander/docker-compose.yml down -v
 }
 
 function s:all(){
   s:arango
   s:redis
   s:nats
+  s:rediscmd
 }
 
 function d:all(){
   d:arango
   d:nats
   d:redis
+  d:rediscmd
 }
 
 function s:redis(){
