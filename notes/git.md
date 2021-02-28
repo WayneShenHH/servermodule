@@ -21,9 +21,11 @@ commit log
 >git log --oneline
 
 global ignore
->code ~/.gitignore_global
->echo wayne* >> ~/.gitignore_global
->git config --global core.excludesfile ~/.gitignore_global
+```
+code ~/.gitignore_global
+echo wayne* >> ~/.gitignore_global
+git config --global core.excludesfile ~/.gitignore_global
+```
 
 ## Oh-My-Zsh Git Aliases
 

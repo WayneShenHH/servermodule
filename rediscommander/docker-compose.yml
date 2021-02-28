@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  redis-commander:
+    container_name: redis-commander
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=7001:127.0.0.1:7001,7002:127.0.0.1:7002,7003:127.0.0.1:7003
+      # - REDIS_HOSTS=36-7001:10.200.6.36:7001,36-7002:10.200.6.36:7002,36-7003:10.200.6.36:7003
+      # - REDIS_HOSTS=37-7001:10.200.6.37:7001,37-7002:10.200.6.37:7002,37-7003:10.200.6.37:7003
+    ports:
+      - "8081:8081"
+    network_mode: "host"
+
+  # nats-streaming-ui:
+  #   container_name : nats-streaming-ui
+  #   image: kesslerdev/nats-streaming-ui:latest
+  #   ports:
+  #     - "8282:8282"
+  #   network_mode: "bridge"
