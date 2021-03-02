@@ -36,7 +36,7 @@ install oh-my-zsh
 ```
 sudo apt-get install zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-echo  "# default set zsh\n/usr/bin/zsh" >> ~/.bashrc
+echo  "\n# default set zsh\n/usr/bin/zsh" >> ~/.bashrc
 ```
 
 install java jdk
