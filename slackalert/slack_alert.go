@@ -1,4 +1,4 @@
-package slackAlert
+package slackalert
 
 import (
 	"bytes"

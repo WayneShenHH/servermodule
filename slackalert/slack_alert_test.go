@@ -1,27 +1,27 @@
-package slackAlert_test
+package slackalert_test
 
 import (
 	"testing"
 
-	"github.com/WayneShenHH/servermodule/slackAlert"
+	"github.com/WayneShenHH/servermodule/slackalert"
 )
 
 func init() {
 }
 
 func Test_slack(t *testing.T) {
-	alertsInfo := slackAlert.SlackAlertsInfo{
+	alertsInfo := slackalert.SlackAlertsInfo{
 		SlackEnable:  true,
 		SlackChannel: "#jenkins_alert_test",
 		Env:          "local",
 	}
 
-	slackAlert.Run(
+	slackalert.Run(
 		"https://hooks.slack.com/services/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",
 		&alertsInfo,
 		"Gamemaster",
 		"asdf",
 		"",
 	)
-	slackAlert.SendStart("啟動")
+	slackalert.SendStart("啟動")
 }

@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/WayneShenHH/servermodule/config"
-	"github.com/WayneShenHH/servermodule/constant"
 	"github.com/WayneShenHH/servermodule/logger"
+	"github.com/WayneShenHH/servermodule/logger/constants"
+	"github.com/WayneShenHH/servermodule/logger/heavenlogger"
+	"github.com/WayneShenHH/servermodule/util/color"
 )
 
 type MsgStruct struct{}
@@ -18,19 +19,15 @@ var (
 		"int": 1,
 		"str": "string",
 	}
-	msgSlice                               = []string{"item1", "item2"}
-	err                                    = fmt.Errorf("error-message-string")
-	serviceCode       constant.ServiceCode = 500
+	msgSlice                                = []string{"item1", "item2"}
+	err                                     = fmt.Errorf("error-message-string")
+	serviceCode       constants.ServiceCode = 500
 	emptyMsgStructPtr *MsgStruct
-	cfg               *config.LoggerConfig = &config.LoggerConfig{
-		StdLevel:    constant.Debug,
-		Formatter:   constant.JsonFormatter,
-		ServiceCode: serviceCode,
-	}
 )
 
 func init() {
-	logger.Init(cfg)
+	logger.Init(heavenlogger.DebugLevel, heavenlogger.ConsoleFormatter, serviceCode)
+	// logger.Init(heavenlogger.DebugLevel, heavenlogger.JsonFormatter)
 }
 
 func Test_Debug(t *testing.T) {
@@ -53,7 +50,7 @@ func Test_Warn(t *testing.T) {
 }
 
 func Test_Error(t *testing.T) {
-	logger.Error(msgStr, msgStruct)
+	logger.Error(err, msgSlice, msgStruct, nil, emptyMsgStructPtr)
 }
 func Test_FormatError(t *testing.T) {
 	logger.Errorf("error: %v", err)
@@ -63,11 +60,37 @@ func Test_FormatError(t *testing.T) {
 }
 
 func Test_Fatal(t *testing.T) {
-	logger.Fatal(err, msgStr, msgStruct) // exit here
+	logger.Fatalf("error: %v", err)
 }
 
 func Test_OpenFile(t *testing.T) {
 	logger.OpenFile("tmp.log")
 	logger.Infof("Test_OpenFile Infof")
 	logger.Errorf("Test_OpenFile Errorf")
+}
+
+func Test_Color(t *testing.T) {
+	for i := 30; i < 107; i++ {
+		for j := 30; j < 107; j++ {
+			// if j != 44 {
+			// 	continue
+			// }
+			if i >= 48 && i <= 89 {
+				continue
+			}
+			if j >= 48 && j <= 89 {
+				continue
+			}
+			c := color.New(color.Color(i), color.Color(j))
+			msg := fmt.Sprintf("[%3d,%3d]", i, j)
+			fmt.Print(c.Add(msg))
+		}
+	}
+}
+
+func Test_DebugLevel(t *testing.T) {
+	logger.Debug1("hello")
+	logger.Debug2("hello")
+	logger.Debug3("hello")
+	logger.Debug4("hello")
 }
