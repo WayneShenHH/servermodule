@@ -8,14 +8,12 @@ import (
 	"strings"
 	"time"
 
-	jsoniter "github.com/json-iterator/go"
+	json "github.com/json-iterator/go"
 
 	"github.com/WayneShenHH/servermodule/logger/constants"
 	"github.com/WayneShenHH/servermodule/util/color"
 	"github.com/WayneShenHH/servermodule/util/stack"
 )
-
-var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Logger implement of paradise
 type Logger struct {

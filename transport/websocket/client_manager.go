@@ -3,9 +3,9 @@ package websocket
 import (
 	"context"
 
-	"github.com/WayneShenHH/servermodule/errorcode"
 	"github.com/WayneShenHH/servermodule/logger"
 	"github.com/WayneShenHH/servermodule/protocol"
+	"github.com/WayneShenHH/servermodule/protocol/errorcode"
 	"nhooyr.io/websocket"
 )
 
@@ -46,10 +46,20 @@ func GetClientManager() ClientManager {
 }
 
 func (c *clientManager) Register(newKey, oldKey string) protocol.ErrorCode {
-	conn, exist := c.clientMap[oldKey]
-	if exist && oldKey != newKey {
-		delete(c.clientMap, oldKey)
+	if oldKey == newKey {
+		return 0
 	}
+
+	if _, exist := c.clientMap[newKey]; exist {
+		return errorcode.InputValueInvalid
+	}
+
+	conn, exist := c.clientMap[oldKey]
+	if !exist {
+		return errorcode.DataIncompleted
+	}
+
+	delete(c.clientMap, oldKey)
 	c.register(newKey, conn)
 
 	return 0

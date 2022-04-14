@@ -10,9 +10,9 @@ import (
 	"github.com/arangodb/go-driver/http"
 
 	"github.com/WayneShenHH/servermodule/config"
-	"github.com/WayneShenHH/servermodule/errorcode"
 	"github.com/WayneShenHH/servermodule/logger"
 	"github.com/WayneShenHH/servermodule/protocol"
+	"github.com/WayneShenHH/servermodule/protocol/errorcode"
 	"github.com/WayneShenHH/servermodule/util"
 )
 

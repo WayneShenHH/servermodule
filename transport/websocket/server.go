@@ -9,7 +9,6 @@ import (
 	"os/signal"
 	"time"
 
-	"golang.org/x/time/rate"
 	"nhooyr.io/websocket"
 
 	"github.com/WayneShenHH/servermodule/config"
@@ -40,7 +39,9 @@ func (hdr *Server) Start() error {
 	logger.Infof("listening on %v", hdr.config.Addr)
 
 	s := &http.Server{
-		Handler:      websocketServer{},
+		Handler: websocketServer{
+			routeHandlerMap: hdr.routeHandlerMap,
+		},
 		ReadTimeout:  hdr.config.ReadTimeout,
 		WriteTimeout: hdr.config.WriteTimeout,
 	}
@@ -71,7 +72,9 @@ type websocketServer struct {
 }
 
 func (s websocketServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c, err := websocket.Accept(w, r, nil)
+	c, err := websocket.Accept(w, r, &websocket.AcceptOptions{
+		OriginPatterns: []string{"*"},
+	})
 	if err != nil {
 		logger.Errorf("%v", err)
 		return
@@ -83,10 +86,12 @@ func (s websocketServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer instance.unregister(c)
 	defer c.Close(websocket.StatusInternalError, "the sky is falling")
 
-	l := rate.NewLimiter(rate.Every(time.Millisecond*100), 10)
 	for {
-		err = s.handleMessage(r.Context(), c, l)
+		err = s.handleMessage(r.Context(), c)
 		if websocket.CloseStatus(err) == websocket.StatusNormalClosure {
+			return
+		}
+		if websocket.CloseStatus(err) == websocket.StatusNoStatusRcvd {
 			return
 		}
 		if err != nil {
@@ -99,15 +104,7 @@ func (s websocketServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // echo reads from the WebSocket connection and then writes
 // the received message back to it.
 // The entire function has 10s to complete.
-func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn, l *rate.Limiter) error {
-	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
-	defer cancel()
-
-	err := l.Wait(ctx)
-	if err != nil {
-		return err
-	}
-
+func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn) error {
 	mt, req, err := c.Read(ctx)
 	if err != nil {
 		return err
@@ -125,12 +122,12 @@ func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn, l
 
 	hdr, exist := s.routeHandlerMap[payload.Action]
 	if !exist {
-		return fmt.Errorf("Action: %v undefined", payload.Action)
+		return fmt.Errorf("Action: [%v] undefined", payload.Action)
 	}
 
 	key, exist := instance.connMap[c]
 	if !exist {
-		return fmt.Errorf("Action: %v undefined", payload.Action)
+		return fmt.Errorf("client connection not found")
 	}
 
 	resp := hdr(&Request{

@@ -1,5 +1,7 @@
 package websocket
 
+import "github.com/WayneShenHH/servermodule/protocol"
+
 type Action string
 
 type Payload struct {
@@ -13,6 +15,7 @@ type Request struct {
 }
 
 type Response struct {
+	Code   protocol.ErrorCode
 	Action Action
 	Data   interface{}
 }

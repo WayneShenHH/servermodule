@@ -28,9 +28,10 @@ var serverWSCmd = &cobra.Command{
 			},
 			"register": func(request *websocket.Request) *websocket.Response {
 				id := request.Payload.Data.(string)
-				websocket.GetClientManager().Register(id, request.ClientKey)
+				code := websocket.GetClientManager().Register(id, request.ClientKey)
 
 				resp := &websocket.Response{
+					Code:   code,
 					Action: "register-res",
 					Data:   id,
 				}
@@ -40,7 +41,10 @@ var serverWSCmd = &cobra.Command{
 		}
 
 		server := websocket.NewServer(context.TODO(), config.Setting.Websocket, handlers)
-		logger.Fatal(server.Start())
+		err := server.Start()
+		if err != nil {
+			logger.Fatalf("WebSocket Server start failed: %v", err)
+		}
 	},
 }
 
