@@ -5,19 +5,19 @@ import "github.com/WayneShenHH/servermodule/protocol"
 type Action string
 
 type Payload struct {
-	Action Action
-	Data   interface{}
+	Action Action      `json:"action"`
+	Data   interface{} `json:"data"`
 }
 
 type Request struct {
-	Payload   Payload
-	ClientKey string
+	Payload   Payload `json:"payload"`
+	ClientKey string  `json:"clientKey"`
 }
 
 type Response struct {
-	Code   protocol.ErrorCode
-	Action Action
-	Data   interface{}
+	Code   protocol.ErrorCode `json:"code"`
+	Action Action             `json:"action"`
+	Data   interface{}        `json:"data"`
 }
 
 // ActionHandler define logic of each route
