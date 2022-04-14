@@ -1,9 +1,12 @@
-package db
+package arangodb
 
 import (
 	"testing"
+	"time"
 
 	"github.com/WayneShenHH/servermodule/config"
+	"github.com/WayneShenHH/servermodule/gracefulshutdown"
+	"github.com/WayneShenHH/servermodule/logger"
 )
 
 const info = `
@@ -38,11 +41,20 @@ const info = `
 	]
   }`
 
-func Test_NestedUpdate(t *testing.T) {
-	db := NewArango(&config.DatabaseConfig{
-		Host: "http://localhost:8529",
-		Name: "Database",
+func init() {
+	logger.Init("debug", "console", 100)
+	gracefulshutdown.Start()
+	initialize(&config.ArangoDBConfig{
+		Addr:          "http://127.0.0.1:8529",
+		Database:      "Database",
+		Connlimit:     5,
+		RetryCount:    5,
+		RetryInterval: time.Millisecond * 300,
+		HttpProtocol:  "1.1",
 	})
+}
+func Test_NestedUpdate(t *testing.T) {
+	db := GetArango()
 	db.NestedUpdate("info", "1.01", map[string]string{
 		"age":                               "age + 1",
 		"banks[?(@.balance > 200)].balance": "balance * 100",

@@ -11,7 +11,7 @@ var Setting Config
 
 // Config config model of env
 type Config struct {
-	Database  *DatabaseConfig
+	Database  *ArangoDBConfig
 	Redis     *RedisConfig
 	NSQ       *NSQConfig
 	BigQuery  *BigQueryConfig
@@ -35,14 +35,16 @@ func SetConfig() {
 	Setting = c
 }
 
-// DatabaseConfig 資料庫連線設定
-type DatabaseConfig struct {
-	Username        string
-	Password        string
-	Name            string
-	Host            string
-	MaxConns        int
-	TimeoutDuration time.Duration
+// ArangoDBConfig 資料庫連線設定
+type ArangoDBConfig struct {
+	Addr          string        `yaml:"addr,omitempty"`
+	Database      string        `yaml:"database,omitempty"`
+	Connlimit     int           `yaml:"connlimit,omitempty"`
+	Username      string        `yaml:"username,omitempty"`
+	Password      string        `yaml:"password,omitempty"`
+	RetryCount    int           `yaml:"retryCount,omitempty"`
+	RetryInterval time.Duration `yaml:"retryInterval,omitempty"`
+	HttpProtocol  string        `yaml:"httpProtocol,omitempty"`
 }
 
 // LoggerConfig logger setting
@@ -54,17 +56,23 @@ type LoggerConfig struct {
 
 // RedisConfig redis setting
 type RedisConfig struct {
-	Host         string
-	Port         int
-	Index        int
-	MaxConns     int
-	MaxIdleConns int
-	Timeout      int  // 單次連線超時 (Millisecond)
-	IdleTimeout  int  // 連線池內存活超時 (Millisecond)
-	ReadTimeout  int  // 讀取超時，應小於等於 Timeout (Millisecond)
-	WriteTimeout int  // 寫入超時，應小於等於 Timeout (Millisecond)
-	JWTExpire    uint // JWT 在 Redis 中的有效期限，單位為 Minute
-	Block        bool // 當達 MaxConn 後收到 Get() 請求時是否等待
+	Addr          string        `yaml:"addr,omitempty"`
+	Password      string        `yaml:"password,omitempty"`
+	PoolSize      int           `yaml:"poolSize,omitempty"`
+	RetryCount    int           `yaml:"retryCount,omitempty"`
+	RetryInterval time.Duration `yaml:"retryInterval,omitempty"`
+}
+
+// NatsConfig setting
+type NatsConfig struct {
+	Addr              string        `yaml:"addr,omitempty"`
+	Username          string        `yaml:"username,omitempty"`
+	Password          string        `yaml:"password,omitempty"`
+	ClusterID         string        `yaml:"clusterID,omitempty"`
+	ReconnInterval    time.Duration `yaml:"reconnInterval,omitempty"`
+	ConnectTimeOut    time.Duration `yaml:"connectTimeOut,omitempty"`
+	StanPingsInterval int           `yaml:"stanPingsInterval,omitempty"`
+	StanPingsMaxOut   int           `yaml:"stanPingsMaxOut,omitempty"`
 }
 
 // NSQConfig config

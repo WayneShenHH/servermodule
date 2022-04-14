@@ -1,4 +1,4 @@
-package db
+package arangodb
 
 import (
 	"context"
@@ -6,19 +6,12 @@ import (
 	"strings"
 
 	driver "github.com/arangodb/go-driver"
-	"github.com/arangodb/go-driver/cluster"
-	"github.com/arangodb/go-driver/http"
 
-	"github.com/WayneShenHH/servermodule/config"
 	"github.com/WayneShenHH/servermodule/logger"
 	"github.com/WayneShenHH/servermodule/protocol"
 	"github.com/WayneShenHH/servermodule/protocol/errorcode"
 	"github.com/WayneShenHH/servermodule/util"
 )
-
-type arangoHdr struct {
-	db driver.Database
-}
 
 const (
 	template = `
@@ -63,39 +56,6 @@ const (
 	questionMark       = '?'
 	comma              = ","
 )
-
-// NewArango 建立 Arango 連線
-func NewArango(cfg *config.DatabaseConfig) NoSQL {
-	conn, err := http.NewConnection(http.ConnectionConfig{
-		Endpoints: []string{cfg.Host},
-		ConnLimit: cfg.MaxConns,
-		ConnectionConfig: cluster.ConnectionConfig{
-			DefaultTimeout: cfg.TimeoutDuration,
-		},
-	})
-	if err != nil {
-		logger.Fatalf(`connect to arangodb failed, endpoint: %v`, cfg.Host)
-	}
-
-	client, err := driver.NewClient(driver.ClientConfig{
-		Connection:     conn,
-		Authentication: driver.BasicAuthentication(cfg.Username, cfg.Password),
-	})
-	if err != nil {
-		logger.Fatalf(`arangodb newclient failed, endpoint: %v`, cfg.Host)
-	}
-
-	ctx := context.Background()
-	db, err := client.Database(ctx, cfg.Name)
-	if err != nil {
-		// handle error
-		logger.Fatalf(`arangodb get Database failed, endpoint: %v, dbname: %v`, cfg.Host, cfg.Name)
-	}
-
-	return &arangoHdr{
-		db: db,
-	}
-}
 
 /** 更新特定 collection 的 document
  * 針對 Collection 操作
