@@ -3,8 +3,6 @@ package env
 import (
 	"os"
 	"strconv"
-
-	"github.com/WayneShenHH/servermodule/logger/constants"
 )
 
 // Setting env cfg
@@ -14,7 +12,7 @@ var Setting *TraceConfig
 type TraceConfig struct {
 	Level     string
 	Formatter string
-	Code      constants.ServiceCode
+	Code      int
 }
 
 func init() {
@@ -25,7 +23,7 @@ func init() {
 	if len(envcode) > 0 {
 		i, err := strconv.Atoi(envcode)
 		if err == nil {
-			Setting.Code = constants.ServiceCode(i)
+			Setting.Code = i
 		}
 	}
 }

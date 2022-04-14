@@ -27,7 +27,7 @@ type Logger struct {
 }
 
 // New instance
-func New(level, formatter string, code constants.ServiceCode) *Logger {
+func New(level, formatter string, code int) *Logger {
 	// check parameter valid
 	lv, exist := levelNameMap[level]
 	if !exist {
@@ -36,7 +36,7 @@ func New(level, formatter string, code constants.ServiceCode) *Logger {
 
 	l := &Logger{
 		level:       lv,
-		serviceCode: code,
+		serviceCode: constants.ServiceCode(code),
 	}
 
 	switch formatter {

@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"github.com/WayneShenHH/servermodule/logger/constants"
 	"github.com/WayneShenHH/servermodule/logger/env"
 
 	"github.com/WayneShenHH/servermodule/logger/heavenlogger"
@@ -49,7 +48,7 @@ var instance Logger
 // Init logger by level & formatter & service-code
 //
 // default is info-level & json-format while parameter invalid
-func Init(level, formatter string, code constants.ServiceCode) {
+func Init(level, formatter string, code int) {
 	instance = heavenlogger.New(level, formatter, code)
 }
 

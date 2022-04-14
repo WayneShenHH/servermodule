@@ -1,4 +1,4 @@
-package util
+package http
 
 import (
 	"errors"
@@ -8,8 +8,8 @@ import (
 	"github.com/WayneShenHH/servermodule/logger"
 )
 
-// PingServer check health
-func PingServer(url string) error {
+// pingServer check health
+func pingServer(url string) error {
 	for i := 0; i < 10; i++ {
 		// Ping the server by sending a GET request to `/health`.
 		logger.Infof("pingServer %v count:%d", url, i)

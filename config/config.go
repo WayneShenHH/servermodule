@@ -3,7 +3,6 @@ package config
 import (
 	"time"
 
-	"github.com/WayneShenHH/servermodule/constant"
 	"github.com/spf13/viper"
 )
 
@@ -48,10 +47,9 @@ type DatabaseConfig struct {
 
 // LoggerConfig logger setting
 type LoggerConfig struct {
-	StdLevel    constant.Level
-	FileLevel   constant.Level
-	Formatter   constant.LogFormatter
-	ServiceCode constant.ServiceCode
+	Level       string
+	Formatter   string
+	ServiceCode int
 }
 
 // RedisConfig redis setting

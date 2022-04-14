@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/spf13/cobra"
 
@@ -19,18 +18,27 @@ var serverWSCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		logger.Debug(cmd.Short)
 		handlers := map[websocket.Action]websocket.ActionHandler{
-			"act1": func(request websocket.Payload) []byte {
-				resp := websocket.Payload{
+			"act1": func(request *websocket.Request) *websocket.Response {
+				resp := &websocket.Response{
 					Action: "act1-res",
 					Data:   "ok",
 				}
-				bytes, err := json.Marshal(resp)
-				if err != nil {
-					logger.Error("act1 error:", err)
+
+				return resp
+			},
+			"register": func(request *websocket.Request) *websocket.Response {
+				id := request.Payload.Data.(string)
+				websocket.GetClientManager().Register(id, request.ClientKey)
+
+				resp := &websocket.Response{
+					Action: "register-res",
+					Data:   id,
 				}
-				return bytes
+
+				return resp
 			},
 		}
+
 		server := websocket.NewServer(context.TODO(), config.Setting.Websocket, handlers)
 		logger.Fatal(server.Start())
 	},

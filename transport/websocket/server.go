@@ -2,7 +2,6 @@ package websocket
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -15,23 +14,14 @@ import (
 
 	"github.com/WayneShenHH/servermodule/config"
 	"github.com/WayneShenHH/servermodule/logger"
+	"github.com/WayneShenHH/servermodule/util"
 )
-
-type Action string
-
-type Payload struct {
-	Action Action
-	Data   interface{}
-}
 
 type Server struct {
 	ctx             context.Context
 	config          *config.WebsocketConfig
 	routeHandlerMap map[Action]ActionHandler
 }
-
-// ActionHandler define logic of each route
-type ActionHandler func(request Payload) []byte
 
 func NewServer(ctx context.Context, cfg *config.WebsocketConfig, routeHandlerMap map[Action]ActionHandler) *Server {
 	return &Server{
@@ -54,6 +44,8 @@ func (hdr *Server) Start() error {
 		ReadTimeout:  hdr.config.ReadTimeout,
 		WriteTimeout: hdr.config.WriteTimeout,
 	}
+
+	initManager()
 
 	errc := make(chan error, 1)
 	go func() {
@@ -84,6 +76,11 @@ func (s websocketServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		logger.Errorf("%v", err)
 		return
 	}
+
+	// setup new conn
+	instance.register(util.GenerateGuid(), c)
+
+	defer instance.unregister(c)
 	defer c.Close(websocket.StatusInternalError, "the sky is falling")
 
 	l := rate.NewLimiter(rate.Every(time.Millisecond*100), 10)
@@ -118,22 +115,40 @@ func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn, l
 
 	// process input here
 	payload := Payload{}
-	err = json.Unmarshal(req, &payload)
+	err = util.Unmarshal(req, &payload)
 	if err != nil {
+		logger.Errorf("websocket/handleMessage/Unmarshal error: %v", err)
 		return err
 	}
+
+	logger.Debug1f("websocket/handleMessage received message:\n %v", string(req))
 
 	hdr, exist := s.routeHandlerMap[payload.Action]
 	if !exist {
 		return fmt.Errorf("Action: %v undefined", payload.Action)
 	}
 
-	resp := hdr(payload)
-
-	err = c.Write(ctx, mt, resp)
-	if err != nil {
-		return fmt.Errorf("failed to io.Copy: %w", err)
+	key, exist := instance.connMap[c]
+	if !exist {
+		return fmt.Errorf("Action: %v undefined", payload.Action)
 	}
 
+	resp := hdr(&Request{
+		ClientKey: key,
+		Payload:   payload,
+	})
+
+	bytes, err := util.Marshal(resp)
+	if err != nil {
+		logger.Errorf("websocket/handleMessage/Marshal error: %v", err)
+		return err
+	}
+
+	err = c.Write(ctx, mt, bytes)
+	if err != nil {
+		return fmt.Errorf("websocket/handleMessage/Write: %w", err)
+	}
+
+	logger.Debug1f("websocket/handleMessage response message:\n %v", string(bytes))
 	return nil
 }

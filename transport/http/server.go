@@ -7,7 +7,6 @@ import (
 
 	"github.com/WayneShenHH/servermodule/config"
 	"github.com/WayneShenHH/servermodule/logger"
-	"github.com/WayneShenHH/servermodule/util"
 )
 
 // Start server
@@ -26,7 +25,7 @@ func Start(cfg config.Config) {
 	started := make(chan bool)
 	go func() {
 		time.Sleep(time.Second)
-		if err := util.PingServer(fmt.Sprintf("http://%v%v", cfg.HTTP.Addr, cfg.HTTP.PingURL)); err != nil {
+		if err := pingServer(fmt.Sprintf("http://%v%v", cfg.HTTP.Addr, cfg.HTTP.PingURL)); err != nil {
 			logger.Fatalf("The router has no response, or it might took too long to start up.")
 		}
 		started <- true

@@ -121,7 +121,7 @@ func initConfig() {
 
 	config.SetConfig()
 	// 初始化 logger
-	logger.Init(config.Setting.Logger)
+	logger.Init(config.Setting.Logger.Level, config.Setting.Logger.Formatter, config.Setting.Logger.ServiceCode)
 }
 
 func readConfigFile() {

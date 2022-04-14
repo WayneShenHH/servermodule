@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -11,8 +10,10 @@ import (
 	"github.com/arangodb/go-driver/http"
 
 	"github.com/WayneShenHH/servermodule/config"
-	"github.com/WayneShenHH/servermodule/constant/errors"
+	"github.com/WayneShenHH/servermodule/errorcode"
 	"github.com/WayneShenHH/servermodule/logger"
+	"github.com/WayneShenHH/servermodule/protocol"
+	"github.com/WayneShenHH/servermodule/util"
 )
 
 type arangoHdr struct {
@@ -103,7 +104,7 @@ func NewArango(cfg *config.DatabaseConfig) NoSQL {
  * @param key document key
  * @param data document dao
  * @return int64 狀態碼 */
-func (hdr *arangoHdr) UpdateDocument(collection, key string, data interface{}) int64 {
+func (hdr *arangoHdr) UpdateDocument(collection, key string, data interface{}) protocol.ErrorCode {
 	// col, err := hdr.db.Collection(context.Background(), collection)
 	// if err != nil {
 	// 	logger.Debugf("db/arangoHdr/UpdateDocument: %v", err)
@@ -120,10 +121,10 @@ func (hdr *arangoHdr) UpdateDocument(collection, key string, data interface{}) i
 	// 	return errors.DatabaseUpdate
 	// }
 
-	jsonData, err := json.Marshal(data)
+	jsonData, err := util.Marshal(data)
 	if err != nil {
-		logger.Debugf("db/arangoHdr/json.Marshal: %v", err)
-		return errors.InputValueInvalid
+		logger.Debugf("db/arangoHdr/util.Marshal: %v", err)
+		return errorcode.InputValueInvalid
 	}
 
 	action := `function (Params) {
@@ -143,7 +144,7 @@ func (hdr *arangoHdr) UpdateDocument(collection, key string, data interface{}) i
 	_, err = hdr.db.Transaction(context.Background(), action, options)
 	if err != nil {
 		logger.Debugf("db/arangoHdr/UpdateDocument/Transaction: %v", err)
-		return errors.DatabaseUpdate
+		return errorcode.DatabaseUpdate
 	}
 
 	return 0
@@ -161,7 +162,7 @@ func (hdr *arangoHdr) UpdateDocument(collection, key string, data interface{}) i
  * @param version 設定 migrate 編號，更新成功時寫入 document.migrate
  * @param params 欄位定義
  * @return int64 狀態碼 */
-func (hdr *arangoHdr) NestedUpdate(collection, version string, params map[string]string) int64 {
+func (hdr *arangoHdr) NestedUpdate(collection, version string, params map[string]string) protocol.ErrorCode {
 	bindVars := map[string]interface{}{
 		"@Collection": collection,
 		"version":     version,
@@ -219,7 +220,7 @@ func (hdr *arangoHdr) NestedUpdate(collection, version string, params map[string
 		if err != nil {
 			logger.Errorf("db/arangoHdr/NestedUpdate: %v", err)
 			logger.Errorf("update aql:\n%v", aql)
-			return errors.DatabaseUpdate
+			return errorcode.DatabaseUpdate
 		}
 		logger.Infof("version: %v, collection:%v finished", version, collection)
 	}

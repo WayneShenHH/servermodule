@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/WayneShenHH/servermodule/logger"
-	"github.com/WayneShenHH/servermodule/logger/constants"
 	"github.com/WayneShenHH/servermodule/logger/heavenlogger"
 	"github.com/WayneShenHH/servermodule/util/color"
 )
@@ -19,9 +18,9 @@ var (
 		"int": 1,
 		"str": "string",
 	}
-	msgSlice                                = []string{"item1", "item2"}
-	err                                     = fmt.Errorf("error-message-string")
-	serviceCode       constants.ServiceCode = 500
+	msgSlice          = []string{"item1", "item2"}
+	err               = fmt.Errorf("error-message-string")
+	serviceCode       = 500
 	emptyMsgStructPtr *MsgStruct
 )
 
