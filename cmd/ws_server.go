@@ -7,7 +7,9 @@ import (
 
 	"github.com/WayneShenHH/servermodule/config"
 	"github.com/WayneShenHH/servermodule/logger"
+	"github.com/WayneShenHH/servermodule/protocol"
 	"github.com/WayneShenHH/servermodule/protocol/dao"
+	"github.com/WayneShenHH/servermodule/protocol/eventcode"
 	"github.com/WayneShenHH/servermodule/transport/websocket"
 )
 
@@ -18,19 +20,18 @@ var serverWSCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		logger.Debug(cmd.Short)
-		handlers := map[dao.Action]dao.ActionHandler{
-			"act1": func(request *dao.Request) *dao.Response {
+		handlers := map[protocol.EventCode]dao.ActionHandler{
+			0: func(request *dao.Request) (protocol.EventCode, *dao.Response) {
 				resp := &dao.Response{
 					Payload: dao.Payload{
 						TraceId: request.Payload.TraceId,
-						Action:  "act1-res",
 						Data:    "ok",
 					},
 				}
 
-				return resp
+				return 0, resp
 			},
-			"register": func(request *dao.Request) *dao.Response {
+			eventcode.Websocket_RegisterService_Request: func(request *dao.Request) (protocol.EventCode, *dao.Response) {
 				id := request.Payload.Data.(string)
 				code := websocket.GetClientManager().Register(id, request.ClientKey)
 
@@ -38,18 +39,17 @@ var serverWSCmd = &cobra.Command{
 					Code: code,
 					Payload: dao.Payload{
 						TraceId: request.Payload.TraceId,
-						Action:  "register-res",
 						Data:    id,
 					},
 				}
 
-				return resp
+				return eventcode.Websocket_RegisterService_Response, resp
 			},
 		}
 
-		parser := map[dao.Action]dao.PayloadHandler{
-			"act1": func(raw *dao.Payload) {},
-			"register": func(raw *dao.Payload) {
+		parser := map[protocol.EventCode]dao.PayloadHandler{
+			0: func(raw *dao.Payload) {},
+			eventcode.Websocket_RegisterService_Request: func(raw *dao.Payload) {
 				var data string
 				raw.Data = &data
 			},

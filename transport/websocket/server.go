@@ -13,6 +13,7 @@ import (
 
 	"github.com/WayneShenHH/servermodule/config"
 	"github.com/WayneShenHH/servermodule/logger"
+	"github.com/WayneShenHH/servermodule/protocol"
 	"github.com/WayneShenHH/servermodule/protocol/dao"
 	"github.com/WayneShenHH/servermodule/util"
 )
@@ -20,11 +21,11 @@ import (
 type Server struct {
 	ctx             context.Context
 	config          *config.WebsocketConfig
-	routeHandlerMap map[dao.Action]dao.ActionHandler
-	payloadParser   map[dao.Action]dao.PayloadHandler
+	routeHandlerMap map[protocol.EventCode]dao.ActionHandler
+	payloadParser   map[protocol.EventCode]dao.PayloadHandler
 }
 
-func NewServer(ctx context.Context, cfg *config.WebsocketConfig, routeHandlerMap map[dao.Action]dao.ActionHandler, payloadParser map[dao.Action]dao.PayloadHandler) *Server {
+func NewServer(ctx context.Context, cfg *config.WebsocketConfig, routeHandlerMap map[protocol.EventCode]dao.ActionHandler, payloadParser map[protocol.EventCode]dao.PayloadHandler) *Server {
 	return &Server{
 		ctx:             ctx,
 		config:          cfg,
@@ -72,8 +73,8 @@ func (hdr *Server) Start() error {
 }
 
 type websocketServer struct {
-	routeHandlerMap map[dao.Action]dao.ActionHandler
-	payloadParser   map[dao.Action]dao.PayloadHandler
+	routeHandlerMap map[protocol.EventCode]dao.ActionHandler
+	payloadParser   map[protocol.EventCode]dao.PayloadHandler
 }
 
 func (s websocketServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -112,27 +113,31 @@ func (s websocketServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn) error {
 	mt, req, err := c.Read(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("websocket/handleMessage/Read error: %v", err)
 	}
 
 	// process input here
 	payload := dao.Payload{}
 
-	if parser, exist := s.payloadParser[payload.Action]; exist {
+	dec, code := util.Decode(req)
+	if code > 0 {
+		return fmt.Errorf("websocket/handleMessage/Decode code: %v", code)
+	}
+
+	if parser, exist := s.payloadParser[dec.EventCode]; exist {
 		parser(&payload)
 	}
 
-	err = util.Unmarshal(req, &payload)
+	err = util.Unmarshal(dec.Data, &payload)
 	if err != nil {
-		logger.Errorf("websocket/handleMessage/Unmarshal error: %v", err)
-		return err
+		return fmt.Errorf("websocket/handleMessage/Unmarshal error: %v", err)
 	}
 
 	logger.Debug1f("websocket/handleMessage received message:\n %v", string(req))
 
-	hdr, exist := s.routeHandlerMap[payload.Action]
+	hdr, exist := s.routeHandlerMap[dec.EventCode]
 	if !exist {
-		return fmt.Errorf("Action: [%v] undefined", payload.Action)
+		return fmt.Errorf("EventCode: [%v] undefined", dec.EventCode)
 	}
 
 	key, exist := instance.connMap[c]
@@ -140,15 +145,18 @@ func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn) e
 		return fmt.Errorf("client connection not found")
 	}
 
-	resp := hdr(&dao.Request{
+	evtcode, resp := hdr(&dao.Request{
 		ClientKey: key,
 		Payload:   payload,
 	})
 
-	bytes, err := util.Marshal(resp)
-	if err != nil {
-		logger.Errorf("websocket/handleMessage/Marshal error: %v", err)
-		return err
+	bytes, code := util.Encode(&util.EncodeData{
+		EventCode: evtcode,
+		Payload:   resp,
+	})
+
+	if code > 0 {
+		return fmt.Errorf("websocket/handleMessage/Encode code: %v", code)
 	}
 
 	err = c.Write(ctx, mt, bytes)

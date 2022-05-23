@@ -2,11 +2,8 @@ package dao
 
 import "github.com/WayneShenHH/servermodule/protocol"
 
-type Action string
-
 type Payload struct {
 	TraceId protocol.TraceId `json:"traceId"`
-	Action  Action           `json:"action"`
 	Data    interface{}      `json:"data"`
 }
 
@@ -21,6 +18,7 @@ type Response struct {
 }
 
 // ActionHandler define logic of each route
-type ActionHandler func(request *Request) *Response
+type ActionHandler func(request *Request) (protocol.EventCode, *Response)
 
+// PayloadHandler parse data of request payload, binding specific data type
 type PayloadHandler func(raw *Payload)
