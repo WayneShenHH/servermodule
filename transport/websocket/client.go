@@ -36,3 +36,5 @@ func NewClient(ctx context.Context, config *config.WebsocketConfig, writeFlow ch
 
 	return hdr
 }
+
+// TODO: 連線，重連，關閉，註冊，PING

@@ -1,12 +1,13 @@
-package websocket
+package dao
 
 import "github.com/WayneShenHH/servermodule/protocol"
 
 type Action string
 
 type Payload struct {
-	Action Action      `json:"action"`
-	Data   interface{} `json:"data"`
+	TraceId protocol.TraceId `json:"traceId"`
+	Action  Action           `json:"action"`
+	Data    interface{}      `json:"data"`
 }
 
 type Request struct {
@@ -15,10 +16,11 @@ type Request struct {
 }
 
 type Response struct {
-	Code   protocol.ErrorCode `json:"code"`
-	Action Action             `json:"action"`
-	Data   interface{}        `json:"data"`
+	Code protocol.ErrorCode `json:"code"`
+	Payload
 }
 
 // ActionHandler define logic of each route
 type ActionHandler func(request *Request) *Response
+
+type PayloadHandler func(raw *Payload)

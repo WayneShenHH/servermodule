@@ -4,18 +4,12 @@ import (
 	"os"
 
 	"github.com/WayneShenHH/servermodule/gracefulshutdown"
-	"github.com/WayneShenHH/servermodule/logger/constants"
 	"github.com/WayneShenHH/servermodule/slackalert"
 )
 
 // SetFatalCallback config fatal callback
 func (l *Logger) SetFatalCallback(fn func(msg string)) {
 	l.fatalCallback = fn
-}
-
-// SetServiceCode config code
-func (l *Logger) SetServiceCode(code constants.ServiceCode) {
-	l.serviceCode = code
 }
 
 // OpenFile output to file

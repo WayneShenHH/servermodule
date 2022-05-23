@@ -13,20 +13,23 @@ import (
 
 	"github.com/WayneShenHH/servermodule/config"
 	"github.com/WayneShenHH/servermodule/logger"
+	"github.com/WayneShenHH/servermodule/protocol/dao"
 	"github.com/WayneShenHH/servermodule/util"
 )
 
 type Server struct {
 	ctx             context.Context
 	config          *config.WebsocketConfig
-	routeHandlerMap map[Action]ActionHandler
+	routeHandlerMap map[dao.Action]dao.ActionHandler
+	payloadParser   map[dao.Action]dao.PayloadHandler
 }
 
-func NewServer(ctx context.Context, cfg *config.WebsocketConfig, routeHandlerMap map[Action]ActionHandler) *Server {
+func NewServer(ctx context.Context, cfg *config.WebsocketConfig, routeHandlerMap map[dao.Action]dao.ActionHandler, payloadParser map[dao.Action]dao.PayloadHandler) *Server {
 	return &Server{
 		ctx:             ctx,
 		config:          cfg,
 		routeHandlerMap: routeHandlerMap,
+		payloadParser:   payloadParser,
 	}
 }
 
@@ -41,6 +44,7 @@ func (hdr *Server) Start() error {
 	s := &http.Server{
 		Handler: websocketServer{
 			routeHandlerMap: hdr.routeHandlerMap,
+			payloadParser:   hdr.payloadParser,
 		},
 		ReadTimeout:  hdr.config.ReadTimeout,
 		WriteTimeout: hdr.config.WriteTimeout,
@@ -68,7 +72,8 @@ func (hdr *Server) Start() error {
 }
 
 type websocketServer struct {
-	routeHandlerMap map[Action]ActionHandler
+	routeHandlerMap map[dao.Action]dao.ActionHandler
+	payloadParser   map[dao.Action]dao.PayloadHandler
 }
 
 func (s websocketServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +116,12 @@ func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn) e
 	}
 
 	// process input here
-	payload := Payload{}
+	payload := dao.Payload{}
+
+	if parser, exist := s.payloadParser[payload.Action]; exist {
+		parser(&payload)
+	}
+
 	err = util.Unmarshal(req, &payload)
 	if err != nil {
 		logger.Errorf("websocket/handleMessage/Unmarshal error: %v", err)
@@ -130,7 +140,7 @@ func (s websocketServer) handleMessage(ctx context.Context, c *websocket.Conn) e
 		return fmt.Errorf("client connection not found")
 	}
 
-	resp := hdr(&Request{
+	resp := hdr(&dao.Request{
 		ClientKey: key,
 		Payload:   payload,
 	})
