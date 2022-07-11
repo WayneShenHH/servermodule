@@ -108,3 +108,20 @@ chewing input
 ```
 sudo apt install ibus-chewing
 ```
+
+reverse-proxy.sit-gm.svc.cluster.local 無法正確連接問題
+因為 ubuntu 有內建 dns 工具，必須停止
+```
+sudo systemctl stop avahi-daemon.socket  // 必須先停止avahi
+sudo systemctl stop avahi-daemon.service  // 必須先停止avahi
+sudo systemctl disable avahi-daemon.socket  // 開機不會自動起avahi-daemon接口
+sudo systemctl disable avahi-daemon.service  // 開機不會自動起avahi-daemon服務
+cd /lib/systemd/system/
+vim cups-browsed.service
+
+# Wants=avahi-daemon.service  //註解掉這行
+
+reboot //重新開機
+
+sudo systemctl status avahi-daemon.service  //檢查avahi-daemon服務狀態
+```
