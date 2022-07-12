@@ -56,6 +56,6 @@ git config --global core.excludesfile ~/.gitignore_global
 |ggpull|git pull origin $(current_branch)|
 |ggpush|git push origin $(current_branch)|
 |gdv|git diff -w "$@" \| view -|
-|ggpnp|git pull origin $(current_branch) && git push origin $(current_branch)|
+|ggpnp|git pull origin \$(current_branch) && git push origin $(current_branch)|
 |git-svn-dcommit-push|git svn dcommit && git push github master:svntrunk|
 |gpa|git add .; git commit -m "$1"; git push; # only in the ocodo fork.|
