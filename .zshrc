@@ -108,15 +108,48 @@ alias toolsgo="cd ~/projects/toolsgo"
 alias wayne="cd ~/projects/servermodule"
 alias c:wayne="code ~/projects/servermodule"
 
+alias ant="cd ~/projects/antbet"
+alias c:ant="code ~/projects/antbet/workspace.code-workspace"
+alias ass="cd ~/projects/antbet/sportserver"
+alias c:ass="cd ~/projects/antbet/sportserver"
+alias asc="cd ~/projects/antbet/sportcontroller"
+alias c:asc="cd ~/projects/antbet/sportcontroller"
+alias asm="cd ~/projects/antbet/sportmaster"
+alias c:asm="cd ~/projects/antbet/sportmaster"
+alias add="cd ~/projects/antbet/antdatadriver"
+alias c:add="cd ~/projects/antbet/antdatadriver"
+function u:add(){
+  go get github.com/woolves/antdatadriver@$1
+  go mod vendor
+}
+
 alias paradise="cd ~/projects/paradise"
+alias c:paradise="code ~/projects/paradise/workspace.code-workspace"
 alias notes="cd ~/projects/paradise/notes"
 alias c:notes="code ~/projects/paradise/notes"
-alias c:service="code ~/projects/paradise/fortest/service-template"
 # main project
+alias psvc="cd ~/projects/paradise/fortest/service_template" 
+alias c:psvc="code ~/projects/paradise/fortest/service_template"
+alias psvci="docker images | grep demeter- | awk '{print \$3}'"
+function s:psvc(){
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/service/docker-compose.yml up -d
+}
+function u:psvc(){
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/service/docker-compose.yml pull
+}
+function d:psvc(){
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/service/docker-compose.yml down -v
+}
 alias pgc="cd ~/projects/paradise/gamecontroller"
 alias c:pgc="code ~/projects/paradise/gamecontroller"
 alias pgm="cd ~/projects/paradise/gamemaster"
 alias c:pgm="code ~/projects/paradise/gamemaster"
+function s:pgm(){
+  docker start gamemaster
+}
+function d:pgm(){
+  docker stop gamemaster
+}
 alias prs="cd ~/projects/paradise/roomservice"
 alias c:prs="code ~/projects/paradise/roomservice"
 alias pbe="cd ~/projects/paradise/backendmodules"
@@ -127,21 +160,81 @@ function u:pbe(){
 }
 alias pgs="cd ~/projects/paradise/gameservice"
 alias c:pgs="code ~/projects/paradise/gameservice"
+function s:pgs(){
+  docker start gameservice
+}
+function d:pgs(){
+  docker stop gameservice
+}
 alias pgl="cd ~/projects/paradise/gologger"
 alias c:pgl="code ~/projects/paradise/gologger"
 function u:pgl(){
   go get gitlab.geax.io/demeter/gologger@$1
   go mod vendor
+  go mod tidy
 }
 alias pgo="cd ~/projects/paradise/gamecore"
 alias c:pgo="code ~/projects/paradise/gamecore"
 function u:pgo(){
   go get gitlab.geax.io/demeter/gamecore@$1
   go mod vendor
+  go mod tidy
 }
-alias psm="cd ~/projects/paradise/fortest/gamesimulation"
-alias c:psm="code ~/projects/paradise/fortest/gamesimulation"
+alias ppo="cd ~/projects/paradise/protocol"
+alias c:ppo="code ~/projects/paradise/protocol"
+function u:ppo(){
+  go get gitlab.geax.io/demeter/protocol@$1
+  go mod vendor
+  go mod tidy
+}
 
+alias pdoc="cd ~/projects/paradise/fortest/documentation"
+alias c:pdoc="code ~/projects/paradise/fortest/documentation"
+
+alias psch="cd ~/projects/paradise/scheduler"
+alias c:psch="code ~/projects/paradise/scheduler"
+
+alias pit="cd ~/projects/paradise/fortest/integrationtesting"
+alias c:pit="code ~/projects/paradise/fortest/integrationtesting"
+
+alias psdk="cd ~/projects/paradise/platform/game-sdk"
+alias c:psdk="code ~/projects/paradise/platform/game-sdk"
+
+alias psw="cd ~/projects/paradise/streamingworker"
+alias c:psw="code ~/projects/paradise/streamingworker"
+
+alias pvc="cd ~/projects/paradise/versioncontroller"
+alias c:pvc="code ~/projects/paradise/versioncontroller"
+
+alias pad="cd ~/projects/paradise/game-management/admin"
+alias c:pad="code ~/projects/paradise/game-management/admin"
+
+alias pre="cd ~/projects/paradise/game-management/report"
+alias c:pre="code ~/projects/paradise/game-management/report"
+
+alias pnpa="cd ~/projects/paradise/game-management/node-public-api"
+alias c:pnpa="code ~/projects/paradise/game-management/node-public-api"
+
+alias pghb="cd ~/projects/paradise/game-management/game-hall-backend"
+alias c:pghb="code ~/projects/paradise/game-management/game-hall-backend"
+
+alias pghw="cd ~/projects/paradise/game-management/game-hall-web"
+alias c:pghw="code ~/projects/paradise/game-management/game-hall-web"
+
+alias pgrw="cd ~/projects/paradise/game-management/game-records-web"
+alias c:pgrw="code ~/projects/paradise/game-management/game-records-web"
+
+alias pgrb="cd ~/projects/paradise/game-management/game-records-backend"
+alias c:pgrb="code ~/projects/paradise/game-management/game-records-backend"
+
+alias pmi="cd ~/projects/paradise/fortest/migration"
+alias c:pmi="cd ~/projects/paradise/fortest/migration"
+
+alias pds="cd ~/projects/paradise/game-management/demo-service"
+alias c:pds="code ~/projects/paradise/game-management/demo-service"
+
+alias gh="git rev-parse --short=8 HEAD"
+alias gh6="git rev-parse --short=6 HEAD"
 alias gcpredis="gcloud compute ssh fsbs-forwarder --zone asia-east1-b -- -N -L 6386:10.0.0.3:6379"
 alias gcpredisl1="kubectl -n=lab1 port-forward service/redis 6386:6379"
 alias gcpnsq="kubectl -n=fsbs port-forward nsqlookupd-4k5qt 4161:4161"
@@ -151,7 +244,83 @@ alias nsq="cd ~/nsqlog && nsqd --lookupd-tcp-address=127.0.0.1:4160 -broadcast-a
 alias nsqui="cd ~/nsqlog && nsqadmin --lookupd-http-address=127.0.0.1:4161"
 alias lintfix="golangci-lint run --fix"
 alias c:zsh="code ~/.zshrc"
-alias c:host="sudo code /etc/hosts --user-data-dir"
+alias c:host="sudo vi /etc/hosts"
+alias l:host="cat /etc/hosts"
+alias redisui="nohup redisdm >/dev/null &"
+alias kc="kubectl"
+alias sshkey="cat ~/.ssh/id_rsa.pub"
+
+function hostch(){
+  if [ -z "$1" ];then
+    echo "must input one of [27, 36, 37, 49, 75, 151]"
+    return
+  fi
+
+  sudo sed -i '$d' /etc/hosts
+  sudo sed -i "$ a 10.200.6.$1 reverse-proxy.sit-gm.svc.cluster.local" /etc/hosts
+  cat /etc/hosts
+}
+
+function u:npm(){
+  rm -rf ./node_modules
+  rm package-lock.json
+  npm i
+}
+
+function login(){
+  if [ -z "$1" ];then
+    echo "must input one of [27, 36, 37, 41, 61, 75, 151]"
+    return
+  fi
+  if [ $1 = '27' ];then
+    sshpass -p "password" ssh -o StrictHostKeyChecking=no root@10.200.6.27
+    return
+  fi
+  if [ $1 = '36' ];then
+    sshpass -p "password" ssh -o StrictHostKeyChecking=no root@10.200.6.36
+    return
+  fi
+  if [ $1 = '37' ];then
+    sshpass -p "password" ssh -o StrictHostKeyChecking=no root@10.200.6.37
+    return
+  fi
+  if [ $1 = '75' ];then
+    sshpass -p "password" ssh -o StrictHostKeyChecking=no root@10.200.6.75
+    return
+  fi
+  if [ $1 = '41' ];then
+    sshpass -p "12345678" ssh -o StrictHostKeyChecking=no thai@10.200.6.41
+    return
+  fi
+  if [ $1 = '61' ];then
+    sshpass -p "12345678" ssh -o StrictHostKeyChecking=no thai@10.200.6.61
+    return
+  fi
+  if [ $1 = '151' ];then
+    sshpass -p "12345678" ssh -o StrictHostKeyChecking=no thai_wu@10.200.6.151
+    return
+  fi
+}
+
+function devdump(){
+  outpath=./lastestDump.tar.gz
+  if [ -z "$1" ];then
+    echo "default output to the same place"
+  else
+    outpath=$1/lastestDump.tar.gz
+    if [ $1 = 'loc' ];then
+      outpath=$HOME/projects/paradise/fortest/service_template/local/arangodb/lastestDump.tar.gz
+    fi
+  fi
+  echo "output to:" $outpath
+
+  DEV="10.200.6.37"
+  DB_URL=http://10.200.6.37:8888/job/DEV/job/build-image-and-deploy-service/job/arangodb-dump/job/arangoDB-dump/ws/$DEV/lastestDump.tar.gz
+  wget --auth-no-challenge \
+	--user=admin --password=1161eb66da93f00301bdeab20c8decfd71 \
+	"$DB_URL" \
+    -O $outpath
+}
 
 function mgd(){
   # https://mega.nz/file/TZ8nFKzL#NfwZWTabsBUG3GyKbZStV_yslg73ENQ3OEQhd-KPGDc
@@ -176,8 +345,29 @@ function sucode(){
   sudo code $1 --user-data-dir
 }
 
+function gostr(){
+  filepath=$1
+  file=$(echo $filepath |rev|cut -d "/" -f 1 |rev)
+  echo $file
+
+  ver1=$(echo $file |cut -d "." -f 1 )
+  ver2=$(echo $file |cut -d "." -f 2 )
+  ver3=$(echo $file |cut -d "." -f 3 )
+  ver=$(echo $ver1.$ver2.$ver3)
+  echo $ver
+
+  ver4=$(echo $file |cut -d "-" -f 1 )
+  echo $ver4
+}
+
 function gvi() {
-  ver="${1:0:8}"
+  echo "source: $1"
+  filepath=$1
+  file=$(echo $filepath |rev|cut -d "/" -f 1 |rev)
+
+  ver=$(echo $file |cut -d "-" -f 1 )
+  echo "version: $ver"
+
   godir="/usr/local/go"
   verdir="/usr/local/gvm/$ver"
   if [ -d $godir ]; then
@@ -335,11 +525,19 @@ function gpm(){
 
 function doloop(){
   for i in {1..$1};
-do
+  do
     # echo "doloop"
     # sh -c $2
-    bddtest odds2
-done
+    ./debug
+  done
+}
+
+function extest(){
+  cd ./games/game$1/example
+  go build -o debug
+  ./debug
+  rm ./debug
+  cd ../../..
 }
 
 function bddtest(){
@@ -389,64 +587,62 @@ function docker-stop-all(){
   sudo docker stop $(docker ps -a -q)
 }
 
-function s:rediscmd(){
-  # sudo docker run --rm --name redis-commander -d \
-  # -p 18081:8081 \
-  # rediscommander/redis-commander:latest
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/rediscommander/docker-compose.yml up -d
+function s:env(){
+  s:arango
+  s:redis
+  s:nats
 }
 
-function d:rediscmd(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/rediscommander/docker-compose.yml down -v
+function d:env(){
+  d:arango
+  d:nats
+  d:redis
 }
 
 function s:all(){
   s:arango
   s:redis
   s:nats
-  s:rediscmd
+  s:psvc
 }
 
 function d:all(){
   d:arango
   d:nats
   d:redis
-  d:rediscmd
+  d:psvc
 }
 
 function s:redis(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/redis/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/redis/docker-compose.yml up -d
   # config cluster
   REDIS_CLUSTER_IP=$(hostname -I | awk '{ print $1}')
   redis-cli -c -p 7001 --cluster create $REDIS_CLUSTER_IP:7001 $REDIS_CLUSTER_IP:7002 $REDIS_CLUSTER_IP:7003 $REDIS_CLUSTER_IP:7004 $REDIS_CLUSTER_IP:7005 $REDIS_CLUSTER_IP:7006 --cluster-replicas 1
 }
 
 function s:nats(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/nats/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/nats/docker-compose.yml up -d
 }
 
 function s:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/arangodb/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/arangodb/docker-compose.yml up -d
 }
 
-function s:server(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/service/docker-compose.yml up -d
+# run while arangodb upgrade to new version ex. 3.7.0 => 3.8.0
+function u:arango(){
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/arangodb/docker-compose.yml run --rm arangodb --database.auto-upgrade
 }
 
 function d:redis(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/redis/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/redis/docker-compose.yml down -v
 }
 
 function d:nats(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/nats/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/nats/docker-compose.yml down -v
 }
 
 function d:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/arangodb/docker-compose.yml down -v
-}
-
-function d:server(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service-template/local/service/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/arangodb/docker-compose.yml down -v
 }
 
 function commit(){

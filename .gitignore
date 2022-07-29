@@ -1,3 +1,16 @@
-vendor
+.idea
+/.idea
+.idea/*
+.idea/**
+.idea/*.*
+*workspace*
+workspace.xml
+.icloud
 *.html
+# .vscode/
+*.icloud
+*.log
+*.csv
+
+vendor
 cmd/wayneutil/wayneutil
