@@ -28,6 +28,13 @@ func NewRetry(count int, interval time.Duration) *Retry {
 func (r *Retry) Run(f func() (error, interface{})) (error, interface{}) {
 	var err error
 	var result interface{}
+
+	// 先執行一次，若成功直接結束
+	err, result = f()
+	if err == nil {
+		return nil, result
+	}
+
 	maxCount := r.count
 	tick := time.NewTicker(r.interval)
 	defer tick.Stop()
@@ -53,9 +60,16 @@ func (r *Retry) Run(f func() (error, interface{})) (error, interface{}) {
 // @return error 錯誤
 //
 // @return interface{} 回傳資料
-func (r *Retry) RunAccordingToJudgment(f func() (error, interface{}), isReTry func(error) bool) (error, interface{}) {
+func (r *Retry) RunOnCondition(f func() (error, interface{}), isReTry func(error) bool) (error, interface{}) {
 	var err error
 	var result interface{}
+
+	// 先執行一次，若成功直接結束
+	err, result = f()
+	if err == nil {
+		return nil, result
+	}
+
 	maxCount := r.count
 	tick := time.NewTicker(r.interval)
 	defer tick.Stop()

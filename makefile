@@ -15,7 +15,10 @@ tool:
 build:
 	go mod tidy
 	go mod vendor
-	go build
+	go build -o wayneutil cmd/wayneutil/main.go
 
 lint:
 	golangci-lint run --fast
+
+install:
+	go install ./cmd/wayneutil

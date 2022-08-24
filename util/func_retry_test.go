@@ -48,7 +48,7 @@ func Test_RetryError(t *testing.T) {
 func Test_RetryRunAccordingToJudgment(t *testing.T) {
 	count := 0
 	retry := NewRetry(RetryCount, RetryInterval)
-	err, result := retry.RunAccordingToJudgment(func() (error, interface{}) {
+	err, result := retry.RunOnCondition(func() (error, interface{}) {
 		count++
 		logger.Infof("retry count: %v", count)
 		return errors.New("test"), nil

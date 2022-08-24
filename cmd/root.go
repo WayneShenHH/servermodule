@@ -70,12 +70,14 @@ func init() {
 
 	// database
 	{
-		viper.SetDefault("database.name", "Database")
+		viper.SetDefault("database.addr", "http://localhost:8529")
+		viper.SetDefault("database.database", "Database")
+		viper.SetDefault("database.connlimit", 10)
 		viper.SetDefault("database.username", "root")
-		viper.SetDefault("database.password", "123456")
-		viper.SetDefault("database.host", "http://localhost:8529")
-		viper.SetDefault("database.maxconns", "60")
-		viper.SetDefault("database.timeoutduration", "5s")
+		viper.SetDefault("database.password", "")
+		viper.SetDefault("database.retryCount", "10")
+		viper.SetDefault("database.retryInterval", "300ms")
+		viper.SetDefault("database.httpProtocol", "1.1")
 	}
 
 	// grpc
@@ -93,7 +95,7 @@ func init() {
 	{
 		viper.SetDefault("logger.stdlevel", "debug")
 		viper.SetDefault("logger.filelevel", "debug")
-		viper.SetDefault("logger.formatter", "")
+		viper.SetDefault("logger.formatter", "console")
 		viper.SetDefault("logger.serviceCode", 0) //LoggerName
 	}
 

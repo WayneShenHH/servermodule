@@ -62,3 +62,9 @@ func Test_NestedUpdate(t *testing.T) {
 		// "banks[*].balance": "balance * 100",
 	})
 }
+
+func Test_Seed(t *testing.T) {
+	db := GetArango()
+	code := db.Seed()
+	t.Logf("code: %v", code)
+}
