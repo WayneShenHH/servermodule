@@ -9,18 +9,24 @@ import (
 完成 Cat 實做，符合 Animal 界面
 */
 func Test_Implement(t *testing.T) {
-	cat := NewCat()
-	cat.Move()  // 印出 "cat walk"
-	cat.Speak() // 印出 "miew"
+	cat := NewCat("Jack")
+	cat.Move()  // 印出 "Jack : cat walk"
+	cat.Speak() // 印出 "Jack : miew"
+	cat.Rename("Mike")
+	cat.Move()  // 印出 "Mike : cat walk"
+	cat.Speak() // 印出 "Mike : miew"
 }
 
 type Animal interface {
 	Move()
 	Speak()
+	Rename(name string)
 }
 
-func NewCat() Animal {
-	return &cat{}
+func NewCat(name string) Animal {
+	return &cat{
+		name: name,
+	}
 }
 
 type cat struct {
@@ -28,8 +34,13 @@ type cat struct {
 }
 
 func (c *cat) Move() {
-	fmt.Println("cat walk")
+	fmt.Println(c.name, ": cat walk")
 }
+
 func (c *cat) Speak() {
-	fmt.Println("miew")
+	fmt.Println(c.name, ": miew")
+}
+
+func (c *cat) Rename(name string) {
+	c.name = name
 }
