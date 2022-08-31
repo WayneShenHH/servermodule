@@ -4,6 +4,13 @@ import "fmt"
 
 const orderTopic = "orderCreated"
 
+/*
+
+https://goplay.tools/snippet/HvjnKRum4Ez
+1.實做 MqServer，能夠讓客戶依照主題訂閱並且轉發訊息
+2.實做 MqClient，提供使用者能夠跟server溝通的sdk
+
+*/
 func main() {
 	fmt.Println("start")
 	srv := NewMqServer()
