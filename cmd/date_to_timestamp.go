@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -9,10 +8,10 @@ import (
 	"github.com/WayneShenHH/servermodule/logger"
 )
 
-var tsCmd = &cobra.Command{
-	Short: "parse timestamp",
-	Long:  `parse timestamp`,
-	Use:   "ts",
+var dateToTimestampCmd = &cobra.Command{
+	Short: "transfer date to timestamp",
+	Long:  `transfer date to timestamp`,
+	Use:   "date",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		logger.Debug(cmd.Short)
@@ -21,16 +20,15 @@ var tsCmd = &cobra.Command{
 			return
 		}
 
-		i, err := strconv.ParseInt(args[0], 10, 64)
+		d, err := time.Parse("2006-01-02", args[0])
 		if err != nil {
 			panic(err)
 		}
-		t := time.UnixMilli(i).UTC()
 
-		logger.Info("date:", t.Format(time.RFC3339))
+		logger.Infof("date: %v, ts: %v", d.Format(time.RFC3339), d.UnixMilli())
 	},
 }
 
 func init() {
-	RootCmd.AddCommand(tsCmd)
+	RootCmd.AddCommand(dateToTimestampCmd)
 }
