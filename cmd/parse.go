@@ -32,7 +32,7 @@ var parseCmd = &cobra.Command{
 		ans := sp[0]
 
 		u, _ := strconv.ParseUint(sp[1], 16, 64)
-		date := time.UnixMilli(int64(u))
+		date := time.UnixMilli(int64(u)).UTC()
 
 		for i := 1; i < len(sp); i++ {
 			u, _ := strconv.ParseUint(sp[i], 16, 64)
