@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -20,12 +22,17 @@ var dateToTimestampCmd = &cobra.Command{
 			return
 		}
 
-		d, err := time.Parse("2006-01-02", args[0])
+		sp := strings.Split(args[0], " ")
+		if len(sp) < 2 {
+			args[0] = fmt.Sprintf("%v 00:00:00", args[0])
+		}
+
+		d, err := time.Parse(time.DateTime, args[0])
 		if err != nil {
 			panic(err)
 		}
 
-		logger.Infof("date: %v, ts: %v", d.Format(time.RFC3339), d.UnixMilli())
+		logger.Infof("date: %v, ts: %v", d.Format(time.DateTime), d.UnixMilli())
 	},
 }
 
