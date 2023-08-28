@@ -80,7 +80,7 @@ source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
-
+setopt no_nomatch
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
@@ -103,31 +103,44 @@ alias prime-run="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __
 alias zsh="source ~/.zshrc"
 alias pid="ps aux | awk '{print \$2 \"\\t\" \$11}' | grep  $1"
 alias s:docker="sudo systemctl start docker"
+alias docker:cls="docker image prune -a"
 
 alias toolsgo="cd ~/projects/toolsgo"
 alias wayne="cd ~/projects/servermodule"
 alias c:wayne="code ~/projects/servermodule"
 
-alias ant="cd ~/projects/antbet"
-alias c:ant="code ~/projects/antbet/workspace.code-workspace"
-alias ass="cd ~/projects/antbet/sportserver"
-alias c:ass="cd ~/projects/antbet/sportserver"
-alias asc="cd ~/projects/antbet/sportcontroller"
-alias c:asc="cd ~/projects/antbet/sportcontroller"
-alias asm="cd ~/projects/antbet/sportmaster"
-alias c:asm="cd ~/projects/antbet/sportmaster"
-alias add="cd ~/projects/antbet/antdatadriver"
-alias c:add="cd ~/projects/antbet/antdatadriver"
-function u:add(){
-  go get github.com/woolves/antdatadriver@$1
+alias hg="cd ~/projects/hg365"
+alias c:hg="code ~/projects/hg365/hg365.code-workspace"
+alias hsa="cd ~/projects/hg365/sportadaptor"
+alias c:hsa="cd ~/projects/hg365/sportadaptor"
+alias hss="cd ~/projects/hg365/sportserver"
+alias c:hss="cd ~/projects/hg365/sportserver"
+alias hsc="cd ~/projects/hg365/sportcontroller"
+alias c:hsc="cd ~/projects/hg365/sportcontroller"
+alias hsm="cd ~/projects/hg365/sportmaster"
+alias c:hsm="cd ~/projects/hg365/sportmaster"
+alias hdd="cd ~/projects/hg365/antdatadriver"
+alias c:hdd="cd ~/projects/hg365/antdatadriver"
+function u:hdd(){
+  go get github.com/hg365/antdatadriver@$1
   go mod vendor
 }
+alias hmath="cd ~/projects/hg365/sportmath"
+alias c:hmath="cd ~/projects/hg365/sportmath"
+function u:hmath(){
+  go get github.com/hg365/sportmath@$1
+  go mod vendor
+}
+
+alias c:egame="code ~/projects/paradise/egame_deploy.code-workspace"
 
 alias paradise="cd ~/projects/paradise"
 alias c:paradise="code ~/projects/paradise/workspace.code-workspace"
 alias notes="cd ~/projects/paradise/notes"
 alias c:notes="code ~/projects/paradise/notes"
 # main project
+alias pegame="cd ~/projects/paradise/egame-service" 
+alias c:pegame="code ~/projects/paradise/egame-service" 
 alias psvc="cd ~/projects/paradise/fortest/service_template" 
 alias c:psvc="code ~/projects/paradise/fortest/service_template"
 alias psvci="docker images | grep demeter- | awk '{print \$3}'"
@@ -156,6 +169,7 @@ alias pbe="cd ~/projects/paradise/backendmodules"
 alias c:pbe="code ~/projects/paradise/backendmodules"
 function u:pbe(){
   go get gitlab.geax.io/demeter/backendmodules@$1
+  go mod tidy
   go mod vendor
 }
 alias pgs="cd ~/projects/paradise/gameservice"
@@ -170,22 +184,22 @@ alias pgl="cd ~/projects/paradise/gologger"
 alias c:pgl="code ~/projects/paradise/gologger"
 function u:pgl(){
   go get gitlab.geax.io/demeter/gologger@$1
-  go mod vendor
   go mod tidy
+  go mod vendor
 }
 alias pgo="cd ~/projects/paradise/gamecore"
 alias c:pgo="code ~/projects/paradise/gamecore"
 function u:pgo(){
   go get gitlab.geax.io/demeter/gamecore@$1
-  go mod vendor
   go mod tidy
+  go mod vendor
 }
 alias ppo="cd ~/projects/paradise/protocol"
 alias c:ppo="code ~/projects/paradise/protocol"
 function u:ppo(){
   go get gitlab.geax.io/demeter/protocol@$1
-  go mod vendor
   go mod tidy
+  go mod vendor
 }
 
 alias pdoc="cd ~/projects/paradise/fortest/documentation"
@@ -215,6 +229,9 @@ alias c:pre="code ~/projects/paradise/game-management/report"
 alias pnpa="cd ~/projects/paradise/game-management/node-public-api"
 alias c:pnpa="code ~/projects/paradise/game-management/node-public-api"
 
+alias pgpa="cd ~/projects/paradise/game-management/go-public-api"
+alias c:pgpa="code ~/projects/paradise/game-management/go-public-api"
+
 alias pghb="cd ~/projects/paradise/game-management/game-hall-backend"
 alias c:pghb="code ~/projects/paradise/game-management/game-hall-backend"
 
@@ -229,12 +246,37 @@ alias c:pgrb="code ~/projects/paradise/game-management/game-records-backend"
 
 alias pmi="cd ~/projects/paradise/fortest/migration"
 alias c:pmi="cd ~/projects/paradise/fortest/migration"
+function pmi_tar() {
+  cd ~/projects/paradise/fortest
+  tar zcvf db_migration.tar.gz ./migration
+  mv db_migration.tar.gz ~/projects/paradise/sql/kkgame/db_migration.tar.gz
+}
 
-alias pds="cd ~/projects/paradise/game-management/demo-service"
-alias c:pds="code ~/projects/paradise/game-management/demo-service"
+alias pmi2="cd ~/projects/paradise/migration"
+alias c:pmi2="cd ~/projects/paradise/migration"
+function u:pmi() {
+  cd ~/projects/paradise/migration
+  go build -o migration
+  cp ./migration ~/projects/paradise/sql/kkgame/migration
+}
+
+alias pds="cd ~/projects/paradise/game-management/demo-site"
+alias c:pds="code ~/projects/paradise/game-management/demo-site"
+
+alias pwt="cd ~/projects/paradise/game-management/webdevtool"
+alias c:pwt="code ~/projects/paradise/game-management/webdevtool"
+
+alias psql="cd ~/projects/paradise/sql"
+alias c:psql="code ~/projects/paradise/sql"
+
+alias argocd="cd ~/projects/paradise/argocd-kkgame"
+alias c:argocd="code ~/projects/paradise/argocd-kkgame"
 
 alias gh="git rev-parse --short=8 HEAD"
 alias gh6="git rev-parse --short=6 HEAD"
+alias gtag="git describe --tag"
+alias gtd="git tag -d $1"
+alias gtdp="git push --delete origin $1"
 alias gcpredis="gcloud compute ssh fsbs-forwarder --zone asia-east1-b -- -N -L 6386:10.0.0.3:6379"
 alias gcpredisl1="kubectl -n=lab1 port-forward service/redis 6386:6379"
 alias gcpnsq="kubectl -n=fsbs port-forward nsqlookupd-4k5qt 4161:4161"
@@ -249,6 +291,60 @@ alias l:host="cat /etc/hosts"
 alias redisui="nohup redisdm >/dev/null &"
 alias kc="kubectl"
 alias sshkey="cat ~/.ssh/id_rsa.pub"
+alias goclear="go clean --modcache"
+alias jbox="~/go/bin/jbox"
+alias dockercls="docker system prune"
+
+function versions(){
+  echo "gamemaster:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/122/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "gameservice:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/257/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "gamecontroller:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/121/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "streamingworker:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/432/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "scheduler:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/160/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+}
+
+function versions_web(){
+  echo "game-hall-web:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/107/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "game-records-web:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/218/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "demo-site:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/459/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+}
+
+function versions_api(){
+  echo "game-hall-backend:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/108/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "game-records-backend:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/219/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "node-public-api:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/127/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "Admin:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/371/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "report:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/363/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+  echo "transfer-service:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/348/repository/commits/master"
+  echo "\n----------------------------------------------------------------------"
+}
 
 function hostch(){
   if [ -z "$1" ];then
@@ -302,6 +398,16 @@ function login(){
   fi
 }
 
+function arango_restore(){
+  # 指定資料夾預先放置好檔案，包含兩個檔案 (*.data.json | *.data.json.gz) & *.structure.json
+  arangorestore --server.authentication=false --create-database=true --server.database "Database" \
+--input-directory "$1"
+}
+
+function dbimport(){
+  arangoimport --file "$1" --type jsonl --server.database "Database" --collection "$2"
+}
+
 function devdump(){
   outpath=./lastestDump.tar.gz
   if [ -z "$1" ];then
@@ -339,6 +445,12 @@ function gbuild() {
   CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ~/projects/paradise/fortest/gamesimulation/game$1_simulation/simulation.exe
   go build -o ~/projects/paradise/fortest/gamesimulation/game$1_simulation/simulation
   prs
+}
+
+function compress(){
+  # $1: destination file name
+  # $2: source diretory
+  tar zcvf $1.tar.gz $2
 }
 
 function sucode(){
@@ -528,7 +640,7 @@ function doloop(){
   do
     # echo "doloop"
     # sh -c $2
-    ./debug
+    npm run dev
   done
 }
 
@@ -555,7 +667,7 @@ function shtest(){
 function svctest(){
   # go clean -testcache && go test -v -timeout 5s ./module/mq/mockqueue/mockqueue_test.go
   # go clean -testcache && go test -v -timeout 5s ./handlers -run Test_Name
-  TRACE_LEVEL=debug go clean -testcache && go test -v -timeout 50s ./$1 -run $2
+  TRACE_LEVEL=debug go clean -testcache && go test -v -timeout 50h ./$1 -run $2
 }
 
 function bentest(){
@@ -614,35 +726,35 @@ function d:all(){
 }
 
 function s:redis(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/redis/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/redis/docker-compose.yml up -d
   # config cluster
   REDIS_CLUSTER_IP=$(hostname -I | awk '{ print $1}')
   redis-cli -c -p 7001 --cluster create $REDIS_CLUSTER_IP:7001 $REDIS_CLUSTER_IP:7002 $REDIS_CLUSTER_IP:7003 $REDIS_CLUSTER_IP:7004 $REDIS_CLUSTER_IP:7005 $REDIS_CLUSTER_IP:7006 --cluster-replicas 1
 }
 
 function s:nats(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/nats/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/nats/docker-compose.yml up -d
 }
 
 function s:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/arangodb/docker-compose.yml up -d
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/arangodb/docker-compose.yml up -d
 }
 
 # run while arangodb upgrade to new version ex. 3.7.0 => 3.8.0
 function u:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/arangodb/docker-compose.yml run --rm arangodb --database.auto-upgrade
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/arangodb/docker-compose.yml run --rm arangodb --database.auto-upgrade
 }
 
 function d:redis(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/redis/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/redis/docker-compose.yml down -v
 }
 
 function d:nats(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/nats/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/nats/docker-compose.yml down -v
 }
 
 function d:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/arangodb/docker-compose.yml down -v
+  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/arangodb/docker-compose.yml down -v
 }
 
 function commit(){
@@ -663,3 +775,13 @@ function ts(){
 # xmodmap ~/.Xmodmap
 git config --global user.name "wayne_shen"
 git config --global user.email "wayne_shen@paradise-soft.com.tw"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/shen/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/home/shen/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/shen/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/shen/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
