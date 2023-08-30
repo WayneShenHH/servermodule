@@ -105,32 +105,8 @@ alias pid="ps aux | awk '{print \$2 \"\\t\" \$11}' | grep  $1"
 alias s:docker="sudo systemctl start docker"
 alias docker:cls="docker image prune -a"
 
-alias toolsgo="cd ~/projects/toolsgo"
 alias wayne="cd ~/projects/servermodule"
 alias c:wayne="code ~/projects/servermodule"
-
-alias hg="cd ~/projects/hg365"
-alias c:hg="code ~/projects/hg365/hg365.code-workspace"
-alias hsa="cd ~/projects/hg365/sportadaptor"
-alias c:hsa="cd ~/projects/hg365/sportadaptor"
-alias hss="cd ~/projects/hg365/sportserver"
-alias c:hss="cd ~/projects/hg365/sportserver"
-alias hsc="cd ~/projects/hg365/sportcontroller"
-alias c:hsc="cd ~/projects/hg365/sportcontroller"
-alias hsm="cd ~/projects/hg365/sportmaster"
-alias c:hsm="cd ~/projects/hg365/sportmaster"
-alias hdd="cd ~/projects/hg365/antdatadriver"
-alias c:hdd="cd ~/projects/hg365/antdatadriver"
-function u:hdd(){
-  go get github.com/hg365/antdatadriver@$1
-  go mod vendor
-}
-alias hmath="cd ~/projects/hg365/sportmath"
-alias c:hmath="cd ~/projects/hg365/sportmath"
-function u:hmath(){
-  go get github.com/hg365/sportmath@$1
-  go mod vendor
-}
 
 alias c:egame="code ~/projects/paradise/egame_deploy.code-workspace"
 
