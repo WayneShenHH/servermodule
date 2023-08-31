@@ -23,6 +23,11 @@ sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 ```
 
+docker login harbor
+```s
+docker login --username 帳號 --password 密碼 img.paradise-soft.com.tw
+```
+
 docker run rediscommander (outsideport:internalport)
 
 ```s
