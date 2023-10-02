@@ -9,3 +9,12 @@ install protoc
 
 install protoc-gen-gogofaster
 >go get github.com/gogo/protobuf/protoc-gen-gogofaster
+
+
+protoc --gogofaster_out=. ./master_to_room.proto
+protoc --gogofaster_out=plugins=grpc:. ./service.proto
+
+# 1. https://github.com/protocolbuffers/protobuf/releases/download/v3.19.1/protoc-3.19.1-linux-x86_64.zip
+# 2. install protoc-3.19.1 to /usr/local/bin or ~/go/bin/protoc
+# 2.1 install protoc from apt-get: sudo apt install protobuf-compiler
+# 3. install golang source: go get github.com/gogo/protobuf/{protoc-gen-gogofaster,protoc-gen-gogofast,protoc-gen-gofast}
