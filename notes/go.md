@@ -3,7 +3,7 @@ import private repository
 >go env -w GOPRIVATE=gitlab.geax.io/demeter  
 >git config --global url."https://wayne_shen:PASSWORD@gitlab.geax.io".insteadOf "https://gitlab.geax.io"
 >git config --global url."git@github.com:".insteadOf "https://github.com/"
->git config --global url."https://$GITHUB_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+>git config --global url."https://$USERNAME:$ACCESS_TOKEN@github.com".insteadOf "https://github.com"
 
 install protoc
 >sudo apt install -y protobuf-compiler
