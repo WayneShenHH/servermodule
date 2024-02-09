@@ -99,6 +99,10 @@ setopt no_nomatch
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+function s:audio(){
+  systemctl --user restart pulseaudio
+}
+
 alias prime-run="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only"
 alias zsh="source ~/.zshrc"
 alias pid="ps aux | awk '{print \$2 \"\\t\" \$11}' | grep  $1"
@@ -111,12 +115,14 @@ alias c:wayne="code ~/projects/servermodule"
 alias c:egame="code ~/projects/paradise/egame_deploy.code-workspace"
 
 alias paradise="cd ~/projects/paradise"
-alias c:paradise="code ~/projects/paradise/workspace.code-workspace"
+alias c:paradise="code ~/projects/paradise/kkgame.code-workspace"
 alias notes="cd ~/projects/paradise/notes"
 alias c:notes="code ~/projects/paradise/notes"
+
+alias s:vpn="echo zxc123 | sudo -S openvpn ~/work/pfSense-UDP4-1194/pfSense-UDP4-1194-config.ovpn"
 # main project
-alias pegame="cd ~/projects/paradise/egame-service" 
-alias c:pegame="code ~/projects/paradise/egame-service" 
+alias pegame="cd ~/projects/paradise/fortest/egame-service" 
+alias c:pegame="code ~/projects/paradise/fortest/egame-service" 
 alias psvc="cd ~/projects/paradise/fortest/service_template" 
 alias c:psvc="code ~/projects/paradise/fortest/service_template"
 alias psvci="docker images | grep demeter- | awk '{print \$3}'"
@@ -131,6 +137,8 @@ function d:psvc(){
 }
 alias pgc="cd ~/projects/paradise/gamecontroller"
 alias c:pgc="code ~/projects/paradise/gamecontroller"
+alias pgc2="cd ~/projects/paradise/gameconnector"
+alias c:pgc2="code ~/projects/paradise/gameconnector"
 alias pgm="cd ~/projects/paradise/gamemaster"
 alias c:pgm="code ~/projects/paradise/gamemaster"
 function s:pgm(){
@@ -187,8 +195,8 @@ alias c:psch="code ~/projects/paradise/scheduler"
 alias pit="cd ~/projects/paradise/fortest/integrationtesting"
 alias c:pit="code ~/projects/paradise/fortest/integrationtesting"
 
-alias psdk="cd ~/projects/paradise/platform/game-sdk"
-alias c:psdk="code ~/projects/paradise/platform/game-sdk"
+alias psdk="cd ~/projects/paradise/game-sdk"
+alias c:psdk="code ~/projects/paradise/game-sdk"
 
 alias psw="cd ~/projects/paradise/streamingworker"
 alias c:psw="code ~/projects/paradise/streamingworker"
@@ -229,11 +237,12 @@ function pmi_tar() {
 }
 
 alias pmi2="cd ~/projects/paradise/migration"
-alias c:pmi2="cd ~/projects/paradise/migration"
+alias c:pmi2="code ~/projects/paradise/migration"
 function u:pmi() {
   cd ~/projects/paradise/migration
-  go build -o migration
-  cp ./migration ~/projects/paradise/sql/kkgame/migration
+  CGO_ENABLED=0 go build -o migration
+  cp ./migration ~/projects/paradise/sql/kkgame/migration_$1
+  file ~/projects/paradise/sql/kkgame/migration_$1
 }
 
 alias pds="cd ~/projects/paradise/game-management/demo-site"
@@ -247,6 +256,11 @@ alias c:psql="code ~/projects/paradise/sql"
 
 alias argocd="cd ~/projects/paradise/argocd-kkgame"
 alias c:argocd="code ~/projects/paradise/argocd-kkgame"
+
+alias pts="cd ~/projects/paradise/transfer-service"
+alias c:pts="code ~/projects/paradise/transfer-service"
+
+alias d:nginx="systemctl stop nginx.service"
 
 alias gh="git rev-parse --short=8 HEAD"
 alias gh6="git rev-parse --short=6 HEAD"
@@ -616,7 +630,11 @@ function doloop(){
   do
     # echo "doloop"
     # sh -c $2
-    npm run dev
+    # npm run dev
+    nc -zv 10.10.66.93 4222
+    nc -zv 10.10.66.93 4223
+    nc -zv 10.10.66.93 4224
+    sleep 1s
   done
 }
 
@@ -709,11 +727,11 @@ function s:redis(){
 }
 
 function s:nats(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/nats/docker-compose.yml up -d
+  sudo docker compose -f $HOME/projects/paradise/fortest/service_template/wayne/nats/docker-compose.yml up -d
 }
 
 function s:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/arangodb/docker-compose.yml up -d
+  sudo docker compose -f $HOME/projects/paradise/fortest/service_template/tools/arangodb/docker-compose.yml up -d
 }
 
 # run while arangodb upgrade to new version ex. 3.7.0 => 3.8.0
