@@ -1,7 +1,7 @@
 # Golang Coding Interview
 
-- IM Dept. Backend Engineer
-- 45 mins
+- EGAME Dept. Backend Engineer
+- 40 mins
 
 ## Description
 
