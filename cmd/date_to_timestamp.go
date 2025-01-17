@@ -36,6 +36,28 @@ var dateToTimestampCmd = &cobra.Command{
 	},
 }
 
+var datetimeToTimestampCmd = &cobra.Command{
+	Short: "transfer datetime to timestamp",
+	Long:  `transfer datetime to timestamp`,
+	Use:   "time",
+
+	Run: func(cmd *cobra.Command, args []string) {
+		logger.Debug(cmd.Short)
+		logger.Info("args:", args)
+		if len(args) < 1 {
+			return
+		}
+
+		d, err := time.Parse(time.DateTime, args[0])
+		if err != nil {
+			panic(err)
+		}
+
+		logger.Infof("datetime: %v, ts: %v", d.Format(time.DateTime), d.UnixMilli())
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(dateToTimestampCmd)
+	RootCmd.AddCommand(datetimeToTimestampCmd)
 }
