@@ -6,6 +6,7 @@ export ZSH="/home/shen/.oh-my-zsh"
 
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin:$HOME/bin
 
+export PATH=$PATH:$HOME/.local/bin
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -17,10 +18,12 @@ ZSH_THEME="robbyrussell"
 # a theme from this variable instead of looking in $ZSH/themes/
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
+export GOOGLE_CLOUD_PROJECT="940773501583"
+export GEMINI_API_KEY="AIzaSyDqIsX1oaRerXZDHmuKneGsvvSaNLYPidM"
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
-
+export	CGO_CFLAGS="-I/usr/include/lpsolve"
+export	CGO_LDFLAGS="-llpsolve55 -lm -ldl -lcolamd"
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
@@ -81,6 +84,7 @@ source $ZSH/oh-my-zsh.sh
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 setopt no_nomatch
+
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
@@ -103,6 +107,8 @@ function s:audio(){
   systemctl --user restart pulseaudio
 }
 
+alias goland="~/go/bin/jetbrains-toolbox"
+
 alias prime-run="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only"
 alias zsh="source ~/.zshrc"
 alias pid="ps aux | awk '{print \$2 \"\\t\" \$11}' | grep  $1"
@@ -123,32 +129,10 @@ alias s:vpn="echo zxc123 | sudo -S openvpn ~/work/pfSense-UDP4-1194/pfSense-UDP4
 # main project
 alias pegame="cd ~/projects/paradise/fortest/egame-service" 
 alias c:pegame="code ~/projects/paradise/fortest/egame-service" 
-alias psvc="cd ~/projects/paradise/fortest/service_template" 
-alias c:psvc="code ~/projects/paradise/fortest/service_template"
-alias psvci="docker images | grep demeter- | awk '{print \$3}'"
-function s:psvc(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/service/docker-compose.yml up -d
-}
-function u:psvc(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/service/docker-compose.yml pull
-}
-function d:psvc(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/local/service/docker-compose.yml down -v
-}
-alias pgc="cd ~/projects/paradise/gamecontroller"
-alias c:pgc="code ~/projects/paradise/gamecontroller"
-alias pgc2="cd ~/projects/paradise/gameconnector"
-alias c:pgc2="code ~/projects/paradise/gameconnector"
-alias pgm="cd ~/projects/paradise/gamemaster"
-alias c:pgm="code ~/projects/paradise/gamemaster"
-function s:pgm(){
-  docker start gamemaster
-}
-function d:pgm(){
-  docker stop gamemaster
-}
-alias prs="cd ~/projects/paradise/roomservice"
-alias c:prs="code ~/projects/paradise/roomservice"
+
+alias pgc="cd ~/projects/paradise/gameconnector"
+alias c:pgc="code ~/projects/paradise/gameconnector"
+
 alias pbe="cd ~/projects/paradise/backendmodules"
 alias c:pbe="code ~/projects/paradise/backendmodules"
 function u:pbe(){
@@ -158,39 +142,12 @@ function u:pbe(){
 }
 alias pgs="cd ~/projects/paradise/gameservice"
 alias c:pgs="code ~/projects/paradise/gameservice"
-function s:pgs(){
-  docker start gameservice
-}
-function d:pgs(){
-  docker stop gameservice
-}
-alias pgl="cd ~/projects/paradise/gologger"
-alias c:pgl="code ~/projects/paradise/gologger"
-function u:pgl(){
-  go get gitlab.geax.io/demeter/gologger@$1
-  go mod tidy
-  go mod vendor
-}
-alias pgo="cd ~/projects/paradise/gamecore"
-alias c:pgo="code ~/projects/paradise/gamecore"
-function u:pgo(){
-  go get gitlab.geax.io/demeter/gamecore@$1
-  go mod tidy
-  go mod vendor
-}
-alias ppo="cd ~/projects/paradise/protocol"
-alias c:ppo="code ~/projects/paradise/protocol"
-function u:ppo(){
-  go get gitlab.geax.io/demeter/protocol@$1
-  go mod tidy
-  go mod vendor
-}
+
+alias pgas="cd ~/projects/paradise/game-api-service"
+alias c:pgas="code ~/projects/paradise/game-api-service"
 
 alias pdoc="cd ~/projects/paradise/fortest/documentation"
 alias c:pdoc="code ~/projects/paradise/fortest/documentation"
-
-alias psch="cd ~/projects/paradise/scheduler"
-alias c:psch="code ~/projects/paradise/scheduler"
 
 alias pit="cd ~/projects/paradise/fortest/integrationtesting"
 alias c:pit="code ~/projects/paradise/fortest/integrationtesting"
@@ -198,46 +155,37 @@ alias c:pit="code ~/projects/paradise/fortest/integrationtesting"
 alias psdk="cd ~/projects/paradise/game-sdk"
 alias c:psdk="code ~/projects/paradise/game-sdk"
 
-alias psw="cd ~/projects/paradise/streamingworker"
-alias c:psw="code ~/projects/paradise/streamingworker"
+alias kkgame="cd ~/projects/paradise/kkgame"
+
+function u:sdk(){
+  nvm use 16.20.2
+  psdk
+  npm run build
+  cp ./dist/sdk_polyfill.js ~/projects/paradise/kkgame/Common/SDK/sdk_polyfill.js
+  cd ~/projects/paradise/kkgame/Common
+  gpa "refactor(sdk): update sdk"
+}
 
 alias pvc="cd ~/projects/paradise/versioncontroller"
 alias c:pvc="code ~/projects/paradise/versioncontroller"
 
-alias pad="cd ~/projects/paradise/game-management/admin"
-alias c:pad="code ~/projects/paradise/game-management/admin"
-
-alias pre="cd ~/projects/paradise/game-management/report"
-alias c:pre="code ~/projects/paradise/game-management/report"
-
-alias pnpa="cd ~/projects/paradise/game-management/node-public-api"
-alias c:pnpa="code ~/projects/paradise/game-management/node-public-api"
+alias pgas="cd ~/projects/paradise/game-api-service"
+alias c:pgas="code ~/projects/paradise/game-api-service"
 
 alias pgpa="cd ~/projects/paradise/game-management/go-public-api"
 alias c:pgpa="code ~/projects/paradise/game-management/go-public-api"
 
-alias pghb="cd ~/projects/paradise/game-management/game-hall-backend"
-alias c:pghb="code ~/projects/paradise/game-management/game-hall-backend"
-
 alias pghw="cd ~/projects/paradise/game-management/game-hall-web"
 alias c:pghw="code ~/projects/paradise/game-management/game-hall-web"
+
+alias pgm="cd ~/projects/paradise/game-management/gamemanual"
+alias c:pgm="code ~/projects/paradise/game-management/gamemanual"
 
 alias pgrw="cd ~/projects/paradise/game-management/game-records-web"
 alias c:pgrw="code ~/projects/paradise/game-management/game-records-web"
 
-alias pgrb="cd ~/projects/paradise/game-management/game-records-backend"
-alias c:pgrb="code ~/projects/paradise/game-management/game-records-backend"
-
-alias pmi="cd ~/projects/paradise/fortest/migration"
-alias c:pmi="cd ~/projects/paradise/fortest/migration"
-function pmi_tar() {
-  cd ~/projects/paradise/fortest
-  tar zcvf db_migration.tar.gz ./migration
-  mv db_migration.tar.gz ~/projects/paradise/sql/kkgame/db_migration.tar.gz
-}
-
-alias pmi2="cd ~/projects/paradise/migration"
-alias c:pmi2="code ~/projects/paradise/migration"
+alias pmi="cd ~/projects/paradise/migration"
+alias c:pmi="code ~/projects/paradise/migration"
 function u:pmi() {
   cd ~/projects/paradise/migration
   CGO_ENABLED=0 go build -o migration
@@ -251,17 +199,14 @@ alias c:pds="code ~/projects/paradise/game-management/demo-site"
 alias pwt="cd ~/projects/paradise/game-management/webdevtool"
 alias c:pwt="code ~/projects/paradise/game-management/webdevtool"
 
-alias psql="cd ~/projects/paradise/sql"
-alias c:psql="code ~/projects/paradise/sql"
-
 alias argocd="cd ~/projects/paradise/argocd-kkgame"
 alias c:argocd="code ~/projects/paradise/argocd-kkgame"
 
-alias pts="cd ~/projects/paradise/transfer-service"
-alias c:pts="code ~/projects/paradise/transfer-service"
-
 alias d:nginx="systemctl stop nginx.service"
 
+alias s:ibus="ibus-daemon &"
+
+alias gmod="git submodule update --init --recursive"
 alias gh="git rev-parse --short=8 HEAD"
 alias gh6="git rev-parse --short=6 HEAD"
 alias gtag="git describe --tag"
@@ -284,22 +229,74 @@ alias sshkey="cat ~/.ssh/id_rsa.pub"
 alias goclear="go clean --modcache"
 alias jbox="~/go/bin/jbox"
 alias dockercls="docker system prune"
+alias snipasteUI="snipaste >/dev/null &"
+alias wu="wayneutil"
+
+function wu(){
+  wayneutil $1 $2 $3
+}
+
+function repair:zsh(){
+  cd ~
+  mv .zsh_history .zsh_history_bad
+  strings -eS .zsh_history_bad > .zsh_history
+  fc -R .zsh_history
+}
+
+function gud(){
+  pgpa 
+  gco dev
+  gpr
+
+  pgs
+  gco dev
+  gpr
+
+  pgc
+  gco dev
+  gpr
+
+  pbe
+  gco dev
+  gpr
+}
+
+function gum(){
+  pgpa 
+  gco master
+  gpr
+
+  pgs
+  gco master
+  gpr
+
+  pgc
+  gco master
+  gpr
+
+  pbe
+  gco master
+  gpr
+
+  pmi
+  gco master
+  gpr
+
+  pegame
+  gco master
+  gpr
+
+  pvc
+  gco master
+  gpr
+}
 
 function versions(){
-  echo "gamemaster:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/122/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
   echo "gameservice:"
   curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/257/repository/commits/master"
   echo "\n----------------------------------------------------------------------"
-  echo "gamecontroller:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/121/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "streamingworker:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/432/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "scheduler:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/160/repository/commits/master"
+  echo "gameconnector:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/575/repository/commits/master"
   echo "\n----------------------------------------------------------------------"
 }
 
@@ -316,23 +313,11 @@ function versions_web(){
 }
 
 function versions_api(){
-  echo "game-hall-backend:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/108/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "game-records-backend:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/219/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "node-public-api:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/127/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "Admin:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/371/repository/commits/master"
+  echo "go-public-api:"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/497/repository/commits/master"
   echo "\n----------------------------------------------------------------------"
   echo "report:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/363/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "transfer-service:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/348/repository/commits/master"
+  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/770/repository/commits/master"
   echo "\n----------------------------------------------------------------------"
 }
 
@@ -353,39 +338,55 @@ function u:npm(){
   npm i
 }
 
-function login(){
-  if [ -z "$1" ];then
-    echo "must input one of [27, 36, 37, 41, 61, 75, 151]"
-    return
-  fi
-  if [ $1 = '27' ];then
-    sshpass -p "password" ssh -o StrictHostKeyChecking=no root@10.200.6.27
-    return
-  fi
-  if [ $1 = '36' ];then
-    sshpass -p "password" ssh -o StrictHostKeyChecking=no root@10.200.6.36
-    return
-  fi
-  if [ $1 = '37' ];then
-    sshpass -p "password" ssh -o StrictHostKeyChecking=no root@10.200.6.37
-    return
-  fi
-  if [ $1 = '75' ];then
-    sshpass -p "password" ssh -o StrictHostKeyChecking=no root@10.200.6.75
-    return
-  fi
-  if [ $1 = '41' ];then
-    sshpass -p "12345678" ssh -o StrictHostKeyChecking=no thai@10.200.6.41
-    return
-  fi
-  if [ $1 = '61' ];then
-    sshpass -p "12345678" ssh -o StrictHostKeyChecking=no thai@10.200.6.61
-    return
-  fi
-  if [ $1 = '151' ];then
-    sshpass -p "12345678" ssh -o StrictHostKeyChecking=no thai_wu@10.200.6.151
-    return
-  fi
+function pprof:heap(){
+  # 傳入 service 網址(ex: http://localhost:6060)，後方路徑(/debug/pprof/heap)為預設，可能會依照各服務改寫
+  go tool pprof $1/debug/pprof/heap
+}
+function pprof:ui(){
+  # 傳入快照檔案路徑
+  go tool pprof -http=:8080 $1
+}
+
+function arango_docker_import(){
+  # arango_docker_import /home/shen/Downloads/20250904_arangodb AccountStatistics account_statistics.csv
+  # 指定資料夾預先放置好檔案
+  docker run --rm \
+  -v $1:/dump \
+  arangodb/arangodb \
+  arangoimport \
+  --server.endpoint tcp://10.127.6.12:8529 \
+  --server.database Converter \
+  --server.username root \
+  --server.password password \
+  --collection $2 \
+  --file "/dump/$3" --type csv
+}
+
+function arango_docker_restore(){
+  # 指定資料夾預先放置好檔案
+  docker run --rm \
+  -v $1:/dump \
+  arangodb/arangodb \
+  arangorestore \
+  --server.endpoint tcp://10.127.6.12:8529 \
+  --server.database Database \
+  --server.username root \
+  --server.password password \
+  --input-directory /dump
+}
+
+function arango_docker_dump(){
+  # 輸出指定資料夾
+  docker run --rm \
+  -v $1:/dump \
+  arangodb/arangodb \
+  arangodump \
+  --server.endpoint tcp://10.127.6.12:8529 \
+  --server.database Database \
+  --server.username root \
+  --server.password password \
+  --overwrite true \
+  --output-directory /dump
 }
 
 function arango_restore(){
