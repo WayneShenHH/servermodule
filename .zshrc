@@ -107,6 +107,10 @@ function s:audio(){
   systemctl --user restart pulseaudio
 }
 
+function ch:hyper(){
+  sudo chmod 4755 /opt/Hyper/chrome-sandbox
+}
+
 alias goland="~/go/bin/jetbrains-toolbox"
 
 alias prime-run="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only"
