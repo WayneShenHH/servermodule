@@ -107,10 +107,6 @@ function s:audio(){
   systemctl --user restart pulseaudio
 }
 
-function ch:hyper(){
-  sudo chmod 4755 /opt/Hyper/chrome-sandbox
-}
-
 alias goland="~/go/bin/jetbrains-toolbox"
 
 alias prime-run="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only"
@@ -122,42 +118,49 @@ alias docker:cls="docker image prune -a"
 alias wayne="cd ~/projects/servermodule"
 alias c:wayne="code ~/projects/servermodule"
 
-alias c:egame="code ~/projects/paradise/egame_deploy.code-workspace"
+alias c:egame="code ~/projects/fgw/egame_deploy.code-workspace"
 
-alias paradise="cd ~/projects/paradise"
-alias c:paradise="code ~/projects/paradise/kkgame.code-workspace"
-alias notes="cd ~/projects/paradise/notes"
-alias c:notes="code ~/projects/paradise/notes"
+alias fgw="cd ~/projects/fgw"
+alias c:fgw="code ~/projects/fgw/kkgame.code-workspace"
 
 alias s:vpn="echo zxc123 | sudo -S openvpn ~/work/pfSense-UDP4-1194/pfSense-UDP4-1194-config.ovpn"
 # main project
-alias pegame="cd ~/projects/paradise/fortest/egame-service" 
-alias c:pegame="code ~/projects/paradise/fortest/egame-service" 
+alias egame="cd ~/projects/fgw/deploy/egame-service" 
+alias c:egame="code ~/projects/fgw/deploy/egame-service" 
 
-alias pgc="cd ~/projects/paradise/gameconnector"
-alias c:pgc="code ~/projects/paradise/gameconnector"
+alias argocd="cd ~/projects/fgw/argocd-kkgame"
+alias c:argocd="code ~/projects/fgw/argocd-kkgame"
 
-alias pbe="cd ~/projects/paradise/backendmodules"
-alias c:pbe="code ~/projects/paradise/backendmodules"
+alias pmi="cd ~/projects/fgw/deploy/migration"
+alias c:pmi="code ~/projects/fgw/deploy/migration"
+function u:pmi() {
+  cd ~/projects/fgw/deploy/migration
+  CGO_ENABLED=0 go build -o migration
+  cp ./migration ~/projects/fgw/deploy/sql/kkgame/migration_$1
+  file ~/projects/fgw/deploy/sql/kkgame/migration_$1
+}
+
+alias pvc="cd ~/projects/fgw/deploy/versioncontroller"
+alias c:pvc="code ~/projects/fgw/deploy/versioncontroller"
+
+alias pgc="cd ~/projects/fgw/gameconnector"
+alias c:pgc="code ~/projects/fgw/gameconnector"
+
+alias pbe="cd ~/projects/fgw/backendmodules"
+alias c:pbe="code ~/projects/fgw/backendmodules"
 function u:pbe(){
   go get gitlab.geax.io/demeter/backendmodules@$1
   go mod tidy
   go mod vendor
 }
-alias pgs="cd ~/projects/paradise/gameservice"
-alias c:pgs="code ~/projects/paradise/gameservice"
+alias pgs="cd ~/projects/fgw/gameservice"
+alias c:pgs="code ~/projects/fgw/gameservice"
 
-alias pgas="cd ~/projects/paradise/game-api-service"
-alias c:pgas="code ~/projects/paradise/game-api-service"
+alias pgas="cd ~/projects/mbg/game-api-service"
+alias c:pgas="code ~/projects/mbg/game-api-service"
 
-alias pdoc="cd ~/projects/paradise/fortest/documentation"
-alias c:pdoc="code ~/projects/paradise/fortest/documentation"
-
-alias pit="cd ~/projects/paradise/fortest/integrationtesting"
-alias c:pit="code ~/projects/paradise/fortest/integrationtesting"
-
-alias psdk="cd ~/projects/paradise/game-sdk"
-alias c:psdk="code ~/projects/paradise/game-sdk"
+alias psdk="cd ~/projects/fgw/cocos/game-sdk"
+alias c:psdk="code ~/projects/fgw/cocos/game-sdk"
 
 alias kkgame="cd ~/projects/paradise/kkgame"
 
@@ -170,41 +173,23 @@ function u:sdk(){
   gpa "refactor(sdk): update sdk"
 }
 
-alias pvc="cd ~/projects/paradise/versioncontroller"
-alias c:pvc="code ~/projects/paradise/versioncontroller"
+alias pgpa="cd ~/projects/fgw/go-public-api"
+alias c:pgpa="code ~/projects/fgw/go-public-api"
 
-alias pgas="cd ~/projects/paradise/game-api-service"
-alias c:pgas="code ~/projects/paradise/game-api-service"
+alias pghw="cd ~/projects/fgw/web/game-hall-web"
+alias c:pghw="code ~/projects/fgw/web/game-hall-web"
 
-alias pgpa="cd ~/projects/paradise/game-management/go-public-api"
-alias c:pgpa="code ~/projects/paradise/game-management/go-public-api"
+alias pgm="cd ~/projects/fgw/web/gamemanual"
+alias c:pgm="code ~/projects/fgw/web/gamemanual"
 
-alias pghw="cd ~/projects/paradise/game-management/game-hall-web"
-alias c:pghw="code ~/projects/paradise/game-management/game-hall-web"
+alias pgrw="cd ~/projects/fgw/web/game-records-web"
+alias c:pgrw="code ~/projects/fgw/web/game-records-web"
 
-alias pgm="cd ~/projects/paradise/game-management/gamemanual"
-alias c:pgm="code ~/projects/paradise/game-management/gamemanual"
+alias pds="cd ~/projects/fgw/web/demo-site"
+alias c:pds="code ~/projects/fgw/web/demo-site"
 
-alias pgrw="cd ~/projects/paradise/game-management/game-records-web"
-alias c:pgrw="code ~/projects/paradise/game-management/game-records-web"
-
-alias pmi="cd ~/projects/paradise/migration"
-alias c:pmi="code ~/projects/paradise/migration"
-function u:pmi() {
-  cd ~/projects/paradise/migration
-  CGO_ENABLED=0 go build -o migration
-  cp ./migration ~/projects/paradise/sql/kkgame/migration_$1
-  file ~/projects/paradise/sql/kkgame/migration_$1
-}
-
-alias pds="cd ~/projects/paradise/game-management/demo-site"
-alias c:pds="code ~/projects/paradise/game-management/demo-site"
-
-alias pwt="cd ~/projects/paradise/game-management/webdevtool"
-alias c:pwt="code ~/projects/paradise/game-management/webdevtool"
-
-alias argocd="cd ~/projects/paradise/argocd-kkgame"
-alias c:argocd="code ~/projects/paradise/argocd-kkgame"
+alias pgt="cd ~/projects/fgw/web/gametool"
+alias c:pgt="code ~/projects/fgw/web/gametool"
 
 alias d:nginx="systemctl stop nginx.service"
 
@@ -252,6 +237,10 @@ function gud(){
   gco dev
   gpr
 
+  pre
+  gco dev
+  gpr
+
   pgs
   gco dev
   gpr
@@ -261,6 +250,10 @@ function gud(){
   gpr
 
   pbe
+  gco dev
+  gpr
+
+  ppo
   gco dev
   gpr
 }
@@ -270,6 +263,10 @@ function gum(){
   gco master
   gpr
 
+  pre
+  gco master
+  gpr
+
   pgs
   gco master
   gpr
@@ -279,6 +276,10 @@ function gum(){
   gpr
 
   pbe
+  gco master
+  gpr
+
+  ppo
   gco master
   gpr
 
@@ -293,36 +294,6 @@ function gum(){
   pvc
   gco master
   gpr
-}
-
-function versions(){
-  echo "gameservice:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/257/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "gameconnector:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/575/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-}
-
-function versions_web(){
-  echo "game-hall-web:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/107/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "game-records-web:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/218/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "demo-site:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/459/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-}
-
-function versions_api(){
-  echo "go-public-api:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/497/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
-  echo "report:"
-  curl --header "PRIVATE-TOKEN: A1GkKDf9uW8TD2wWzZZh" "https://gitlab.geax.io/api/v4/projects/770/repository/commits/master"
-  echo "\n----------------------------------------------------------------------"
 }
 
 function hostch(){
