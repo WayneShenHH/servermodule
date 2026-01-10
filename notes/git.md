@@ -27,6 +27,12 @@ echo wayne* >> ~/.gitignore_global
 git config --global core.excludesfile ~/.gitignore_global
 ```
 
+global username
+```
+git config --global user.name wayne_shen
+git config --global user.email "wayne_shen@tengyuntech.com"
+```
+
 ## Oh-My-Zsh Git Aliases
 
 |alias|origin cmd|
