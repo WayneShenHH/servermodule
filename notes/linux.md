@@ -11,6 +11,12 @@ echo "\nxmodmap ~/.Xmodmap" >> ~/.zshrc
 login with root
 >sudo su -
 
+install chewing input
+```
+sudo apt-get install ibus-chewing
+ibus restart
+```
+
 postman
 >sudo snap install postman
 
