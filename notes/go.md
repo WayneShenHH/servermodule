@@ -1,7 +1,7 @@
 import private repository
 >https://blog.wu-boy.com/2020/03/read-private-module-in-golang/  
-- go env -w GOPRIVATE=gitlab.geax.io/demeter  
-- git config --global url."https://wayne_shen:PASSWORD@gitlab.geax.io".insteadOf "https://gitlab.geax.io"
+- go env -w GOPRIVATE=gitlab.fgw/demeter  
+- git config --global url."https://wayne_shen:PASSWORD@gitlab.fgw".insteadOf "https://gitlab.fgw"
 - git config --global url."git@github.com:".insteadOf "https://github.com/"
 - git config --global url."https://$USERNAME:$ACCESS_TOKEN@github.com".insteadOf "https://github.com"
 
