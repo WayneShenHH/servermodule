@@ -13,4 +13,5 @@ workspace.xml
 *.csv
 
 vendor
-cmd/wayneutil/wayneutil
+cmd/wayneutil/wayneutil￼
+wayneutil

@@ -340,14 +340,32 @@ function ubuntu:install(){
     sudo snap install slack
     sudo snap install --classic code
     sudo apt-get install build-essential libssl-dev
-    sudo apt-get install git curl zsh
+    sudo apt-get install git curl zsh docker.io htop
+
+    # oh-my-zsh
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    echo  "\n# default set zsh\n/usr/bin/zsh" >> ~/.bashrc
+
+    # docker 
+    sudo groupadd docker
+    sudo usermod -aG docker $USER
+    newgrp docker
+
     # https://github.com/nvm-sh/nvm/releases
     curl https://raw.githubusercontent.com/creationix/nvm/v0.40.3/install.sh | bash
     nvm ls-remote
     nvm install v25.5.0
 
+    # hyper issue
     sudo chmod 4755 /opt/Hyper/chrome-sandbox
+
+    # git
     git config --global credential.helper store
+
+    ssh-keygen -t rsa -C "wayne_shen@tengyuntech.com"
+
+    # golang
+    # https://go.dev/dl/
 
     cd ~
     mkdir projects
@@ -357,6 +375,28 @@ function ubuntu:install(){
     mkdir projects/fgw/cocos
     cd ~/projects
     git clone https://github.com/WayneShenHH/servermodule.git
+}
+
+function fgw:clone(){
+    cd ~/projects/fgw
+    git clone https://gitlab.fgw/egame/backendmodules.git
+    git clone https://gitlab.fgw/egame/go-public-api.git
+    git clone https://gitlab.fgw/egame/gameconnector.git
+    git clone https://gitlab.fgw/egame/gameservice.git
+
+    cd ~/projects/fgw/deploy
+    git clone https://gitlab.fgw/deploy/versioncontroller.git
+    git clone https://gitlab.fgw/deploy/migration.git
+    git clone https://gitlab.fgw/deploy/egame-service.git
+    git clone https://gitlab.fgw/deploy/automation-testing.git
+    git clone http://gitlab.paradise-soft.com.tw/deployscript/devops/utils/argocd-kkgame.git
+
+    cd ~/projects/fgw/web
+    git clone https://gitlab.fgw/egame/web/game-hall-web.git
+    git clone https://gitlab.fgw/egame/web/gamemanual.git
+    git clone https://gitlab.fgw/egame/web/game-records-web.git
+    git clone https://gitlab.fgw/egame/web/demo-site.git
+    git clone https://gitlab.fgw/egame/web/gametool.git
 }
 
 function sucode(){
