@@ -12,6 +12,9 @@ sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
 
+# vpn required
+docker login https://img.paradise-soft.com.tw/
+
 # https://github.com/nvm-sh/nvm/releases
 curl https://raw.githubusercontent.com/creationix/nvm/v0.40.3/install.sh | bash
 nvm ls-remote
@@ -25,6 +28,7 @@ ssh-keygen -t rsa -C "wayne_shen@tengyuntech.com"
 
 # golang
 # https://go.dev/dl/
+go env -w GOPRIVATE=gitlab.fgw/egame
 
 mkdir ~/projects
 mkdir ~/projects/fgw
