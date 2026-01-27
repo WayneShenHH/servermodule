@@ -23,7 +23,7 @@ function s:audio(){
 
 alias goland="~/go/bin/jetbrains-toolbox"
 
-alias prime-run="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only"
+# alias prime-run="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only"
 alias zsh="source ~/.zshrc"
 alias pid="ps aux | awk '{print \$2 \"\\t\" \$11}' | grep  $1"
 alias s:docker="sudo systemctl start docker"
@@ -40,8 +40,8 @@ alias s:vpn="echo zxc123 | sudo -S openvpn ~/work/pfSense-UDP4-1194/pfSense-UDP4
 alias egame="cd ~/projects/fgw/deploy/egame-service" 
 alias c:egame="code ~/projects/fgw/deploy/egame-service" 
 
-alias argocd="cd ~/projects/fgw/argocd-kkgame"
-alias c:argocd="code ~/projects/fgw/argocd-kkgame"
+alias argocd="cd ~/projects/fgw/deploy/argocd-kkgame"
+alias c:argocd="code ~/projects/fgw/deploy/argocd-kkgame"
 
 alias pmi="cd ~/projects/fgw/deploy/migration"
 alias c:pmi="code ~/projects/fgw/deploy/migration"
@@ -106,6 +106,11 @@ alias c:pgt="code ~/projects/fgw/web/gametool"
 alias d:nginx="systemctl stop nginx.service"
 
 alias s:ibus="ibus-daemon &"
+
+function add:crt(){
+    cp $1 /usr/local/share/ca-certificates
+    sudo update-ca-certificates
+}
 
 alias gmod="git submodule update --init --recursive"
 alias gh="git rev-parse --short=8 HEAD"
@@ -329,6 +334,29 @@ function compress(){
   # $1: destination file name
   # $2: source diretory
   tar zcvf $1.tar.gz $2
+}
+
+function ubuntu:install(){
+    sudo snap install slack
+    sudo snap install --classic code
+    sudo apt-get install build-essential libssl-dev
+    sudo apt-get install git curl zsh
+    # https://github.com/nvm-sh/nvm/releases
+    curl https://raw.githubusercontent.com/creationix/nvm/v0.40.3/install.sh | bash
+    nvm ls-remote
+    nvm install v25.5.0
+
+    sudo chmod 4755 /opt/Hyper/chrome-sandbox
+    git config --global credential.helper store
+
+    cd ~
+    mkdir projects
+    mkdir projects/fgw
+    mkdir projects/fgw/deploy
+    mkdir projects/fgw/web
+    mkdir projects/fgw/cocos
+    cd ~/projects
+    git clone https://github.com/WayneShenHH/servermodule.git
 }
 
 function sucode(){
@@ -656,7 +684,7 @@ function ts(){
 
 # xmodmap ~/.Xmodmap
 git config --global user.name "wayne_shen"
-git config --global user.email "wayne_shen@paradise-soft.com.tw"
+git config --global user.email "wayne_shen@tengyuntech.com"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
