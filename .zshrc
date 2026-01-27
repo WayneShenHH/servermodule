@@ -336,47 +336,6 @@ function compress(){
   tar zcvf $1.tar.gz $2
 }
 
-function ubuntu:install(){
-    sudo snap install slack
-    sudo snap install --classic code
-    sudo apt-get install build-essential libssl-dev
-    sudo apt-get install git curl zsh docker.io htop
-
-    # oh-my-zsh
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    echo  "\n# default set zsh\n/usr/bin/zsh" >> ~/.bashrc
-
-    # docker 
-    sudo groupadd docker
-    sudo usermod -aG docker $USER
-    newgrp docker
-
-    # https://github.com/nvm-sh/nvm/releases
-    curl https://raw.githubusercontent.com/creationix/nvm/v0.40.3/install.sh | bash
-    nvm ls-remote
-    nvm install v25.5.0
-
-    # hyper issue
-    sudo chmod 4755 /opt/Hyper/chrome-sandbox
-
-    # git
-    git config --global credential.helper store
-
-    ssh-keygen -t rsa -C "wayne_shen@tengyuntech.com"
-
-    # golang
-    # https://go.dev/dl/
-
-    cd ~
-    mkdir projects
-    mkdir projects/fgw
-    mkdir projects/fgw/deploy
-    mkdir projects/fgw/web
-    mkdir projects/fgw/cocos
-    cd ~/projects
-    git clone https://github.com/WayneShenHH/servermodule.git
-}
-
 function fgw:clone(){
     cd ~/projects/fgw
     git clone https://gitlab.fgw/egame/backendmodules.git
