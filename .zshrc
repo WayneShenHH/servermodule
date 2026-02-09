@@ -61,7 +61,7 @@ alias c:pgc="code ~/projects/fgw/gameconnector"
 alias pbe="cd ~/projects/fgw/backendmodules"
 alias c:pbe="code ~/projects/fgw/backendmodules"
 function u:pbe(){
-  go get gitlab.geax.io/demeter/backendmodules@$1
+  go get gitlab.fgw/egame/backendmodules@$1
   go mod tidy
   go mod vendor
 }
