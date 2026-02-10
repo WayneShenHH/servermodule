@@ -5,7 +5,7 @@ export PATH=$PATH:$HOME/.local/bin
 
 ZSH_THEME="robbyrussell"
 export GOOGLE_CLOUD_PROJECT="940773501583"
-export GEMINI_API_KEY="AIzaSyDqIsX1oaRerXZDHmuKneGsvvSaNLYPidM"
+export GEMINI_API_KEY=""
 
 # go build 使用了 c語言的 lpsolve 函式庫，需要設定編譯參數
 # export	CGO_CFLAGS="-I/usr/include/lpsolve"
