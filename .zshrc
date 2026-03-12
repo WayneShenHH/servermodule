@@ -109,20 +109,20 @@ git config --global user.name "wayne_shen"
 git config --global user.email "wayne_shen@tengyuntech.com"
 
 function fgw:clone(){
-    cd ~/projects/fgw
+    add:dir ~/projects/fgw
     git clone https://gitlab.fgw/egame/backendmodules.git
     git clone https://gitlab.fgw/egame/go-public-api.git
     git clone https://gitlab.fgw/egame/gameconnector.git
     git clone https://gitlab.fgw/egame/gameservice.git
 
-    cd ~/projects/fgw/deploy
+    add:dir ~/projects/fgw/deploy
     git clone https://gitlab.fgw/deploy/versioncontroller.git
     git clone https://gitlab.fgw/deploy/migration.git
     git clone https://gitlab.fgw/deploy/egame-service.git
     git clone https://gitlab.fgw/deploy/automation-testing.git
     git clone http://gitlab.paradise-soft.com.tw/deployscript/devops/utils/argocd-kkgame.git
 
-    cd ~/projects/fgw/web
+    add:dir ~/projects/fgw/web
     git clone https://gitlab.fgw/egame/web/game-hall-web.git
     git clone https://gitlab.fgw/egame/web/gamemanual.git
     git clone https://gitlab.fgw/egame/web/game-records-web.git
@@ -140,10 +140,6 @@ function gud(){
   gpr
 
   pgc
-  gco dev
-  gpr
-
-  pbe
   gco dev
   gpr
 }
@@ -214,6 +210,14 @@ alias jbox="~/go/bin/jbox"
 alias dockercls="docker system prune"
 alias snipasteUI="snipaste >/dev/null &"
 alias wu="wayneutil"
+
+function add:dir() {
+  if [ ! -d "$1" ]; then
+    mkdir "$1"
+  fi
+
+  cd "$1"
+}
 
 function repair:zsh(){
   cd ~
