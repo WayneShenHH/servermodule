@@ -1,0 +1,46 @@
+alias gmod="git submodule update --init --recursive"
+alias gh="git rev-parse --short=8 HEAD"
+alias gh6="git rev-parse --short=6 HEAD"
+alias gtag="git describe --tag"
+alias gtd="git tag -d $1"
+alias gtdp="git push --delete origin $1"
+
+function commit(){
+  git commit -m "feat($1): $2"
+  git push
+}
+
+function gpa(){
+  git add .
+  git commit -m "$1"
+  git push
+}
+
+function gitcls(){
+  git fetch
+  git rebase
+  git checkout master
+  git pull
+  if git branch --merged master | grep -v '^[ *]*master$';then
+      git branch --merged master | grep -v '^[ *]*master$' | xargs git branch -d
+  else
+    echo "not found any merged branch"
+  fi
+  git fetch --prune
+}
+
+function gpm(){
+  if [ -z "$1" ];then
+    echo "need input a branch to merge"
+    return
+  fi
+  cur=$(git branch --show-current)
+  echo "current:" $cur
+  echo "update:" $1 "\n"
+  gco $1
+  gup
+  gco $cur
+  echo "\n"
+  echo $cur "merge from:" $1
+  gm $1
+}

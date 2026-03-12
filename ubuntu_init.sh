@@ -1,5 +1,5 @@
-sudo snap install slack
-sudo snap install --classic code
+# sudo snap install slack
+# sudo snap install --classic code
 sudo apt-get install build-essential libssl-dev
 sudo apt-get install git curl zsh docker.io htop
 
@@ -13,7 +13,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 
 # vpn required
-docker login https://img.paradise-soft.com.tw/
+# docker login https://img.paradise-soft.com.tw/
 
 # https://github.com/nvm-sh/nvm/releases
 curl https://raw.githubusercontent.com/creationix/nvm/v0.40.3/install.sh | bash
@@ -24,17 +24,13 @@ nvm install v25.5.0
 # git
 git config --global credential.helper store
 
-ssh-keygen -t rsa -C "wayne_shen@tengyuntech.com"
+# ssh-keygen -t rsa -C "wayne_shen@tengyuntech.com"
 
 # golang
 # https://go.dev/dl/
-go env -w GOPRIVATE=gitlab.fgw/egame
+# go env -w GOPRIVATE=gitlab.fgw/egame
 
 mkdir ~/projects
-mkdir ~/projects/fgw
-mkdir ~/projects/fgw/deploy
-mkdir ~/projects/fgw/web
-mkdir ~/projects/fgw/cocos
 cd ~/projects
 git clone https://github.com/WayneShenHH/servermodule.git
 

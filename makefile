@@ -1,8 +1,3 @@
-
-# require .apib file and define your apis, you should install aglio at first
-gen_apib:
-	aglio -i ./example.apib -o ./example.html
-
 buildflag:
 	go build -ldflags "-X GameService/env.Gitcommitnum=`git rev-parse --short=6 HEAD`"
 
@@ -23,3 +18,10 @@ lint:
 
 install:
 	go install ./cmd/wayneutil
+
+zshrc:
+	echo "source ${PWD}/.zshrc" > ~/.zshrc
+	echo "source ${PWD}/.zshrc_golang" >> ~/.zshrc
+	echo "source ${PWD}/.zshrc_fgw" >> ~/.zshrc
+	echo "source ${PWD}/.zshrc_git" >> ~/.zshrc
+	zsh ~/.zshrc

@@ -1,0 +1,213 @@
+export GOOGLE_CLOUD_PROJECT="940773501583"
+
+alias fgw="cd ~/projects/fgw"
+alias c:fgw="code ~/projects/fgw/kkgame.code-workspace"
+
+alias s:vpn="echo zxc123 | sudo -S openvpn ~/work/pfSense-UDP4-1194/pfSense-UDP4-1194-config.ovpn"
+# main project
+alias egame="cd ~/projects/fgw/deploy/egame-service" 
+alias c:egame="code ~/projects/fgw/deploy/egame-service" 
+
+alias argocd="cd ~/projects/fgw/deploy/argocd-kkgame"
+alias c:argocd="code ~/projects/fgw/deploy/argocd-kkgame"
+
+alias pmi="cd ~/projects/fgw/deploy/migration"
+alias c:pmi="code ~/projects/fgw/deploy/migration"
+function u:pmi() {
+  cd ~/projects/fgw/deploy/migration
+  CGO_ENABLED=0 go build -o migration
+  cp ./migration ~/projects/fgw/deploy/sql/kkgame/migration_$1
+  file ~/projects/fgw/deploy/sql/kkgame/migration_$1
+}
+
+alias pvc="cd ~/projects/fgw/deploy/versioncontroller"
+alias c:pvc="code ~/projects/fgw/deploy/versioncontroller"
+
+alias pgc="cd ~/projects/fgw/gameconnector"
+alias c:pgc="code ~/projects/fgw/gameconnector"
+
+alias pbe="cd ~/projects/fgw/backendmodules"
+alias c:pbe="code ~/projects/fgw/backendmodules"
+function u:pbe(){
+  go get gitlab.fgw/egame/backendmodules@$1
+  go mod tidy
+  go mod vendor
+}
+alias pgs="cd ~/projects/fgw/gameservice"
+alias c:pgs="code ~/projects/fgw/gameservice"
+
+alias pgas="cd ~/projects/mbg/game-api-service"
+alias c:pgas="code ~/projects/mbg/game-api-service"
+
+alias psdk="cd ~/projects/fgw/cocos/game-sdk"
+alias c:psdk="code ~/projects/fgw/cocos/game-sdk"
+
+alias kkgame="cd ~/projects/paradise/kkgame"
+
+function u:sdk(){
+  nvm use 16.20.2
+  psdk
+  npm run build
+  cp ./dist/sdk_polyfill.js ~/projects/paradise/kkgame/Common/SDK/sdk_polyfill.js
+  cd ~/projects/paradise/kkgame/Common
+  gpa "refactor(sdk): update sdk"
+}
+
+alias pgpa="cd ~/projects/fgw/go-public-api"
+alias c:pgpa="code ~/projects/fgw/go-public-api"
+
+alias pghw="cd ~/projects/fgw/web/game-hall-web"
+alias c:pghw="code ~/projects/fgw/web/game-hall-web"
+
+alias pgm="cd ~/projects/fgw/web/gamemanual"
+alias c:pgm="code ~/projects/fgw/web/gamemanual"
+
+alias pgrw="cd ~/projects/fgw/web/game-records-web"
+alias c:pgrw="code ~/projects/fgw/web/game-records-web"
+
+alias pds="cd ~/projects/fgw/web/demo-site"
+alias c:pds="code ~/projects/fgw/web/demo-site"
+
+alias pgt="cd ~/projects/fgw/web/gametool"
+alias c:pgt="code ~/projects/fgw/web/gametool"
+
+git config --global user.name "wayne_shen"
+git config --global user.email "wayne_shen@tengyuntech.com"
+
+function fgw:clone(){
+    add:dir ~/projects/fgw
+    git clone https://gitlab.fgw/egame/backendmodules.git
+    git clone https://gitlab.fgw/egame/go-public-api.git
+    git clone https://gitlab.fgw/egame/gameconnector.git
+    git clone https://gitlab.fgw/egame/gameservice.git
+
+    add:dir ~/projects/fgw/deploy
+    git clone https://gitlab.fgw/deploy/versioncontroller.git
+    git clone https://gitlab.fgw/deploy/migration.git
+    git clone https://gitlab.fgw/deploy/egame-service.git
+    git clone https://gitlab.fgw/deploy/automation-testing.git
+    git clone http://gitlab.paradise-soft.com.tw/deployscript/devops/utils/argocd-kkgame.git
+
+    add:dir ~/projects/fgw/web
+    git clone https://gitlab.fgw/egame/web/game-hall-web.git
+    git clone https://gitlab.fgw/egame/web/gamemanual.git
+    git clone https://gitlab.fgw/egame/web/game-records-web.git
+    git clone https://gitlab.fgw/egame/web/demo-site.git
+    git clone https://gitlab.fgw/egame/web/gametool.git
+}
+
+function gud(){
+  pgpa 
+  gco dev
+  gpr
+
+  pgs
+  gco dev
+  gpr
+
+  pgc
+  gco dev
+  gpr
+}
+
+function gum(){
+  pgpa 
+  gco master
+  gpr
+
+  pgs
+  gco master
+  gpr
+
+  pgc
+  gco master
+  gpr
+
+  pbe
+  gco master
+  gpr
+
+  pmi
+  gco master
+  gpr
+
+  egame
+  gco master
+  gpr
+
+  pvc
+  gco master
+  gpr
+}
+
+function arango_docker_import(){
+  # arango_docker_import /home/shen/Downloads/20250904_arangodb AccountStatistics account_statistics.csv
+  # 指定資料夾預先放置好檔案
+  docker run --rm \
+  -v $1:/dump \
+  arangodb/arangodb \
+  arangoimport \
+  --server.endpoint tcp://10.127.6.12:8529 \
+  --server.database Converter \
+  --server.username root \
+  --server.password password \
+  --collection $2 \
+  --file "/dump/$3" --type csv
+}
+
+function arango_docker_restore(){
+  # 指定資料夾預先放置好檔案
+  docker run --rm \
+  -v $1:/dump \
+  arangodb/arangodb \
+  arangorestore \
+  --server.endpoint tcp://10.127.6.12:8529 \
+  --server.database Database \
+  --server.username root \
+  --server.password password \
+  --input-directory /dump
+}
+
+function arango_docker_dump(){
+  # 輸出指定資料夾
+  docker run --rm \
+  -v $1:/dump \
+  arangodb/arangodb \
+  arangodump \
+  --server.endpoint tcp://10.127.6.12:8529 \
+  --server.database Database \
+  --server.username root \
+  --server.password password \
+  --overwrite true \
+  --output-directory /dump
+}
+
+function arango_restore(){
+  # 指定資料夾預先放置好檔案，包含兩個檔案 (*.data.json | *.data.json.gz) & *.structure.json
+  arangorestore --server.authentication=false --create-database=true --server.database "Database" \
+--input-directory "$1"
+}
+
+function dbimport(){
+  arangoimport --file "$1" --type jsonl --server.database "Database" --collection "$2"
+}
+
+function devdump(){
+  outpath=./lastestDump.tar.gz
+  if [ -z "$1" ];then
+    echo "default output to the same place"
+  else
+    outpath=$1/lastestDump.tar.gz
+    if [ $1 = 'loc' ];then
+      outpath=$HOME/projects/paradise/fortest/service_template/local/arangodb/lastestDump.tar.gz
+    fi
+  fi
+  echo "output to:" $outpath
+
+  DEV="10.200.6.37"
+  DB_URL=http://10.200.6.37:8888/job/DEV/job/build-image-and-deploy-service/job/arangodb-dump/job/arangoDB-dump/ws/$DEV/lastestDump.tar.gz
+  wget --auth-no-challenge \
+	--user=admin --password=1161eb66da93f00301bdeab20c8decfd71 \
+	"$DB_URL" \
+    -O $outpath
+}
