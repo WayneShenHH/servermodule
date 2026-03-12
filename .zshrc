@@ -32,6 +32,8 @@ alias docker:cls="docker image prune -a"
 alias wayne="cd ~/projects/servermodule"
 alias c:wayne="code ~/projects/servermodule"
 
+####################################### fgw project begin ###################################################
+
 alias fgw="cd ~/projects/fgw"
 alias c:fgw="code ~/projects/fgw/kkgame.code-workspace"
 
@@ -103,6 +105,81 @@ alias c:pds="code ~/projects/fgw/web/demo-site"
 alias pgt="cd ~/projects/fgw/web/gametool"
 alias c:pgt="code ~/projects/fgw/web/gametool"
 
+git config --global user.name "wayne_shen"
+git config --global user.email "wayne_shen@tengyuntech.com"
+
+function fgw:clone(){
+    cd ~/projects/fgw
+    git clone https://gitlab.fgw/egame/backendmodules.git
+    git clone https://gitlab.fgw/egame/go-public-api.git
+    git clone https://gitlab.fgw/egame/gameconnector.git
+    git clone https://gitlab.fgw/egame/gameservice.git
+
+    cd ~/projects/fgw/deploy
+    git clone https://gitlab.fgw/deploy/versioncontroller.git
+    git clone https://gitlab.fgw/deploy/migration.git
+    git clone https://gitlab.fgw/deploy/egame-service.git
+    git clone https://gitlab.fgw/deploy/automation-testing.git
+    git clone http://gitlab.paradise-soft.com.tw/deployscript/devops/utils/argocd-kkgame.git
+
+    cd ~/projects/fgw/web
+    git clone https://gitlab.fgw/egame/web/game-hall-web.git
+    git clone https://gitlab.fgw/egame/web/gamemanual.git
+    git clone https://gitlab.fgw/egame/web/game-records-web.git
+    git clone https://gitlab.fgw/egame/web/demo-site.git
+    git clone https://gitlab.fgw/egame/web/gametool.git
+}
+
+function gud(){
+  pgpa 
+  gco dev
+  gpr
+
+  pgs
+  gco dev
+  gpr
+
+  pgc
+  gco dev
+  gpr
+
+  pbe
+  gco dev
+  gpr
+}
+
+function gum(){
+  pgpa 
+  gco master
+  gpr
+
+  pgs
+  gco master
+  gpr
+
+  pgc
+  gco master
+  gpr
+
+  pbe
+  gco master
+  gpr
+
+  pmi
+  gco master
+  gpr
+
+  egame
+  gco master
+  gpr
+
+  pvc
+  gco master
+  gpr
+}
+
+####################################### fgw project end ###################################################
+
 alias d:nginx="systemctl stop nginx.service"
 
 alias s:ibus="ibus-daemon &"
@@ -138,90 +215,11 @@ alias dockercls="docker system prune"
 alias snipasteUI="snipaste >/dev/null &"
 alias wu="wayneutil"
 
-function wu(){
-  wayneutil $1 $2 $3
-}
-
 function repair:zsh(){
   cd ~
   mv .zsh_history .zsh_history_bad
   strings -eS .zsh_history_bad > .zsh_history
   fc -R .zsh_history
-}
-
-function gud(){
-  pgpa 
-  gco dev
-  gpr
-
-  pre
-  gco dev
-  gpr
-
-  pgs
-  gco dev
-  gpr
-
-  pgc
-  gco dev
-  gpr
-
-  pbe
-  gco dev
-  gpr
-
-  ppo
-  gco dev
-  gpr
-}
-
-function gum(){
-  pgpa 
-  gco master
-  gpr
-
-  pre
-  gco master
-  gpr
-
-  pgs
-  gco master
-  gpr
-
-  pgc
-  gco master
-  gpr
-
-  pbe
-  gco master
-  gpr
-
-  ppo
-  gco master
-  gpr
-
-  pmi
-  gco master
-  gpr
-
-  pegame
-  gco master
-  gpr
-
-  pvc
-  gco master
-  gpr
-}
-
-function hostch(){
-  if [ -z "$1" ];then
-    echo "must input one of [27, 36, 37, 49, 75, 151]"
-    return
-  fi
-
-  sudo sed -i '$d' /etc/hosts
-  sudo sed -i "$ a 10.200.6.$1 reverse-proxy.sit-gm.svc.cluster.local" /etc/hosts
-  cat /etc/hosts
 }
 
 function u:npm(){
@@ -336,26 +334,8 @@ function compress(){
   tar zcvf $1.tar.gz $2
 }
 
-function fgw:clone(){
-    cd ~/projects/fgw
-    git clone https://gitlab.fgw/egame/backendmodules.git
-    git clone https://gitlab.fgw/egame/go-public-api.git
-    git clone https://gitlab.fgw/egame/gameconnector.git
-    git clone https://gitlab.fgw/egame/gameservice.git
-
-    cd ~/projects/fgw/deploy
-    git clone https://gitlab.fgw/deploy/versioncontroller.git
-    git clone https://gitlab.fgw/deploy/migration.git
-    git clone https://gitlab.fgw/deploy/egame-service.git
-    git clone https://gitlab.fgw/deploy/automation-testing.git
-    git clone http://gitlab.paradise-soft.com.tw/deployscript/devops/utils/argocd-kkgame.git
-
-    cd ~/projects/fgw/web
-    git clone https://gitlab.fgw/egame/web/game-hall-web.git
-    git clone https://gitlab.fgw/egame/web/gamemanual.git
-    git clone https://gitlab.fgw/egame/web/game-records-web.git
-    git clone https://gitlab.fgw/egame/web/demo-site.git
-    git clone https://gitlab.fgw/egame/web/gametool.git
+function unzip() {
+  tar -xzf $1
 }
 
 function sucode(){
@@ -608,64 +588,6 @@ function docker-stop-all(){
   sudo docker stop $(docker ps -a -q)
 }
 
-function s:env(){
-  s:arango
-  s:redis
-  s:nats
-}
-
-function d:env(){
-  d:arango
-  d:nats
-  d:redis
-}
-
-function s:all(){
-  s:arango
-  s:redis
-  s:nats
-  s:psvc
-}
-
-function d:all(){
-  d:arango
-  d:nats
-  d:redis
-  d:psvc
-}
-
-function s:redis(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/redis/docker-compose.yml up -d
-  # config cluster
-  REDIS_CLUSTER_IP=$(hostname -I | awk '{ print $1}')
-  redis-cli -c -p 7001 --cluster create $REDIS_CLUSTER_IP:7001 $REDIS_CLUSTER_IP:7002 $REDIS_CLUSTER_IP:7003 $REDIS_CLUSTER_IP:7004 $REDIS_CLUSTER_IP:7005 $REDIS_CLUSTER_IP:7006 --cluster-replicas 1
-}
-
-function s:nats(){
-  sudo docker compose -f $HOME/projects/paradise/fortest/service_template/wayne/nats/docker-compose.yml up -d
-}
-
-function s:arango(){
-  sudo docker compose -f $HOME/projects/paradise/fortest/service_template/tools/arangodb/docker-compose.yml up -d
-}
-
-# run while arangodb upgrade to new version ex. 3.7.0 => 3.8.0
-function u:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/arangodb/docker-compose.yml run --rm arangodb --database.auto-upgrade
-}
-
-function d:redis(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/redis/docker-compose.yml down -v
-}
-
-function d:nats(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/nats/docker-compose.yml down -v
-}
-
-function d:arango(){
-  sudo docker-compose -f $HOME/projects/paradise/fortest/service_template/wayne/arangodb/docker-compose.yml down -v
-}
-
 function commit(){
   git commit -m "feat($1): $2"
   git push
@@ -681,9 +603,6 @@ function ts(){
   date --date=@$1
 }
 
-# xmodmap ~/.Xmodmap
-git config --global user.name "wayne_shen"
-git config --global user.email "wayne_shen@tengyuntech.com"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
