@@ -48,6 +48,10 @@ const charset_upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const charset_lower = "abcdefghijklmnopqrstuvwxyz"
 
 func generatePassword(length int, option string) (string, error) {
+	if option == "" {
+		option = "lud"
+	}
+
 	basic := []byte{}
 
 	charset := ""
