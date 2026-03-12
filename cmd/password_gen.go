@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"crypto/rand"
 	"errors"
-	"math/big"
+	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
 
@@ -20,13 +20,17 @@ var genPasswordCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		logger.Debug(cmd.Short)
 		logger.Info("args:", args)
-		if len(args) < 2 {
+		if len(args) < 1 {
 			return
 		}
 
 		pwdLen, err := strconv.Atoi(args[0])
 		if err != nil {
 			panic(err)
+		}
+
+		if len(args) < 2 {
+			args = append(args, "lud")
 		}
 
 		pwd, err := generatePassword(pwdLen, args[1])
@@ -44,33 +48,47 @@ const charset_upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const charset_lower = "abcdefghijklmnopqrstuvwxyz"
 
 func generatePassword(length int, option string) (string, error) {
-	password := make([]byte, length)
+	basic := []byte{}
 
 	charset := ""
 	if strings.ContainsRune(option, 'l') {
 		charset += charset_lower
+		basic = append(basic, charset_lower[rand.Intn(len(charset_lower))])
 	}
 	if strings.ContainsRune(option, 'u') {
 		charset += charset_upper
+		basic = append(basic, charset_upper[rand.Intn(len(charset_upper))])
 	}
 	if strings.ContainsRune(option, 'd') {
 		charset += charset_number
+		basic = append(basic, charset_number[rand.Intn(len(charset_number))])
 	}
 	if strings.ContainsRune(option, 's') {
 		charset += charset_symbol
+		basic = append(basic, charset_symbol[rand.Intn(len(charset_symbol))])
 	}
 
 	if len(charset) == 0 {
 		return "", errors.New("options wrong:" + option)
 	}
 
-	for i := range password {
-		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
-		if err != nil {
-			return "", err
-		}
-		password[i] = charset[num.Int64()]
+	if len(basic) > length {
+		return "", fmt.Errorf("length wrong: %v", length)
 	}
+
+	password := make([]byte, 0, length-len(basic))
+
+	for i := 0; i < length-len(basic); i++ {
+		num := rand.Intn(len(charset))
+		password = append(password, charset[num])
+	}
+
+	password = append(password, basic...)
+
+	// shuffle password
+	rand.Shuffle(len(password), func(i, j int) {
+		password[i], password[j] = password[j], password[i]
+	})
 
 	return string(password), nil
 }
