@@ -31,9 +31,11 @@ alias d:nginx="systemctl stop nginx.service"
 
 alias s:ibus="ibus-daemon &"
 
-function add:crt(){
-    cp $1 /usr/local/share/ca-certificates
-    sudo update-ca-certificates
+function docker:save(){
+  img=$(docker images | grep $1 | awk '{print $1}' | head -n 1) 
+  filename=$(echo "$img" | awk -F'[/]' '{print $NF}')
+  echo "save image: $img to file: $filename.tar"
+  docker save -o $filename.tar $img
 }
 
 function docker:load(){
