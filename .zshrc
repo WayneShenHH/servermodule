@@ -36,6 +36,15 @@ function add:crt(){
     sudo update-ca-certificates
 }
 
+function docker:load(){
+  docker load -i $1.tar
+}
+
+function add:crt(){
+    cp $1 /usr/local/share/ca-certificates
+    sudo update-ca-certificates
+}
+
 alias gcpredis="gcloud compute ssh fsbs-forwarder --zone asia-east1-b -- -N -L 6386:10.0.0.3:6379"
 alias gcpredisl1="kubectl -n=lab1 port-forward service/redis 6386:6379"
 alias gcpnsq="kubectl -n=fsbs port-forward nsqlookupd-4k5qt 4161:4161"
