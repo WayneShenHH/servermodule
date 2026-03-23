@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-export ZSH="/home/shen/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin:$HOME/bin
 export PATH=$PATH:$HOME/.local/bin
 
