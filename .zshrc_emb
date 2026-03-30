@@ -1,0 +1,16 @@
+alias emb="cd ~/projects/emb/egame"
+alias c:emb="code ~/projects/emb/egame/kkgame.code-workspace"
+
+
+alias egc="cd ~/projects/emb/gameconnector"
+alias c:egc="code ~/projects/emb/gameconnector"
+
+alias:ebe="cd ~/projects/emb/backendmodules"
+alias c:ebe="code ~/projects/emb/backendmodules"
+function u:ebe(){
+  go get gitlab.the-force.com.tw/egame/backendmodules@$1
+  go mod tidy
+  go mod vendor
+}
+alias egs="cd ~/projects/emb/gameservice"
+alias c:egs="code ~/projects/emb/gameservice"

@@ -22,6 +22,7 @@ install:
 zshrc:
 	echo "source ${PWD}/.zshrc" > ~/.zshrc
 	echo "source ${PWD}/.zshrc_golang" >> ~/.zshrc
-	echo "source ${PWD}/.zshrc_fgw" >> ~/.zshrc
 	echo "source ${PWD}/.zshrc_git" >> ~/.zshrc
+	echo "source ${PWD}/.zshrc_fgw" >> ~/.zshrc
+	echo "source ${PWD}/.zshrc_emb" >> ~/.zshrc
 	zsh ~/.zshrc
