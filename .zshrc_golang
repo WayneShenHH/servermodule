@@ -5,6 +5,10 @@
 alias lintfix="golangci-lint run --fix"
 alias goclear="go clean --modcache"
 
+function pprof:profile(){
+  go tool pprof $1/debug/pprof/profile?seconds=30
+}
+
 function pprof:heap(){
   # 傳入 service 網址(ex: http://localhost:6060)，後方路徑(/debug/pprof/heap)為預設，可能會依照各服務改寫
   go tool pprof $1/debug/pprof/heap

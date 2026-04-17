@@ -1,6 +1,8 @@
-alias emb="cd ~/projects/emb/egame/egame"
-alias c:emb="code ~/projects/emb/egame/egame/kkgame.code-workspace"
+alias emb="cd ~/projects/emb/egame"
+alias c:emb="code ~/projects/emb/egame/kkgame.code-workspace"
 
+alias force="cd ~/projects/emb/force"
+alias c:force="code ~/projects/emb/force"
 
 alias egc="cd ~/projects/emb/egame/gameconnector"
 alias c:egc="code ~/projects/emb/egame/gameconnector"
@@ -14,3 +16,13 @@ function u:ebe(){
 }
 alias egs="cd ~/projects/emb/egame/gameservice"
 alias c:egs="code ~/projects/emb/egame/gameservice"
+
+alias emi="cd ~/projects/emb/egame/deploy/migration"
+alias c:emi="code ~/projects/emb/egame/deploy/migration"
+
+alias epo="cd ~/projects/emb/protobuf"
+alias c:epo="code ~/projects/emb/protobuf"
+
+function d:proto(){
+  protodecoder -msg $1 -base64 $2
+}
