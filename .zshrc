@@ -72,6 +72,14 @@ function add:dir() {
   cd "$1"
 }
 
+function gen:rsa() {
+  # $1 帶入個人名稱，通常為用戶信箱
+  ssh-keygen -t rsa -C "$1"
+  # 遠端必須要生成 .ssh 資料夾並且權限為 
+  # chmod 700 ~/.ssh
+  # chmod 600 ~/.ssh/authorized_keys
+}
+
 function repair:zsh(){
   cd ~
   mv .zsh_history .zsh_history_bad
