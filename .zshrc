@@ -42,6 +42,10 @@ function docker:load(){
   docker load -i $1.tar
 }
 
+function docker:truncate(){
+  truncate -s 0 $(docker inspect --format='{{.LogPath}}' $1)
+}
+
 function add:crt(){
     cp $1 /usr/local/share/ca-certificates
     sudo update-ca-certificates

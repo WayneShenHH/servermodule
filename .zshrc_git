@@ -38,7 +38,7 @@ function gpm(){
   echo "current:" $cur
   echo "update:" $1 "\n"
   gco $1
-  gup
+  gpr
   gco $cur
   echo "\n"
   echo $cur "merge from:" $1

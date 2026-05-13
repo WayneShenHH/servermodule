@@ -15,3 +15,4 @@ workspace.xml
 vendor
 cmd/wayneutil/wayneutil￼
 wayneutil
+.DS_Store

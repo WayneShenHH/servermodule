@@ -1,3 +1,5 @@
+export SSH_USER="wayne.shen"
+
 alias emb="cd ~/projects/emb/egame"
 alias c:emb="code ~/projects/emb/egame/kkgame.code-workspace"
 
